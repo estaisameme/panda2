@@ -35,6 +35,7 @@ public class ModelTests {
           play(move);
       }
 
+
       public void turnInModel() {
           turn();
       }
@@ -148,27 +149,29 @@ public class ModelTests {
 
     @Test
     public void testInitialise() {
-        Set<Piece> pieces = new HashSet<Piece>();
+        Set<Piece> testPieces = new HashSet<Piece>();
         Piece pieceWhite = new Piece(Colour.White, 0, 0);
         Piece pieceRed = new Piece(Colour.Red, 0, 0);
-        for (int j = 0; j < 4; j ++) {
-            for (int i = 0; i < 10; i ++) {
+        for (int j = 0; j < 3; j ++) {
+            for (int i = 0; i < 8; i ++) {
                 if ((i + j) % 2 != 0) {
                     pieceWhite.setX(i);
                     pieceWhite.setY(j);
-                    pieces.add(pieceWhite);
+                    testPieces.add(pieceWhite);
                 }
             }
         }
-        for (int j = 0; j < 4; j ++) {
-            for (int i = 0; i < 10; i ++) {
+        for (int j = 5; j < 8; j ++) {
+            for (int i = 0; i < 8; i ++) {
                 if ((i + j) % 2 != 0) {
                     pieceRed.setX(i);
                     pieceRed.setY(j);
-                    pieces.add(pieceRed);
+                    testPieces.add(pieceRed);
                 }
             }
         }
+        DraughtsModel model = new DraughtsModel("This is a test",null);
+        assertEquals("Board not set up correctly", testPieces, model.getPieces());
     }
 
 }
