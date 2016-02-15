@@ -31,6 +31,10 @@ public class ModelTests {
           return removePiece(position, destination);
       }
 
+      public void playInModel(Move move) {
+          play(move);
+      }
+
       public void turnInModel() {
           turn();
       }
@@ -90,16 +94,81 @@ public class ModelTests {
     public void testRemovePieceWorksAsIntended() throws Exception {
         TestModel model = new TestModel("Test", new TestPlayer());
         Point location = new Point(3,5);
-        Point destination = new Point(1, 5);
+        Point destination = new Point(1, 3);
         assertEquals("The up/left jump is not being recognised correctly",true,model.removePieceInModel(location,destination));
         destination.x = 1;
-        destination.y = 3;
+        destination.y = 7;
         assertEquals("The down/left jump is not being recognised correctly",true,model.removePieceInModel(location,destination));
         destination.x = 5;
-        destination.y = 3;
+        destination.y = 7;
         assertEquals("The down/right jump is not being recognised correctly",true,model.removePieceInModel(location,destination));
         destination.x = 5;
-        destination.y = 5;
+        destination.y = 3;
         assertEquals("The up/right jump is not being recognised correctly",true,model.removePieceInModel(location,destination));
     }
+
+    @Test
+    public void testMovePiece() {
+        Set<Piece> pieces = new HashSet<Piece>();
+        Piece piece = new Piece(Colour.Red, 3, 3);
+        pieces.add(piece);
+        TestModel model = new TestModel("Test", null, Colour.Red, pieces);
+        Move move = new Move(piece, 2, 2);
+
+        model.playInModel(move);
+        assertEquals("up/left move not played correctly", piece, model.getPiece(2,2));
+
+        move = new Move(piece, 3, 1);
+        model.playInModel(move);
+        assertEquals("up/right move not played correctly", piece, model.getPiece(3,1));
+
+        move = new Move(piece, 2, 2);
+        model.playInModel(move);
+        assertEquals("down/left move not played correctly", piece, model.getPiece(2,2));
+
+        move = new Move(piece, 3, 3);
+        model.playInModel(move);
+        assertEquals("down/right move not played correctly", piece, model.getPiece(3,3));
+    }
+
+    @Test
+    public void testJumpRemove() {
+        Set<Piece> pieces = new HashSet<Piece>();
+        Piece pieceA = new Piece(Colour.Red, 3, 3);
+        Piece pieceB = new Piece(Colour.White, 4, 4);
+        pieces.add(pieceA);
+        pieces.add(pieceB);
+        TestModel model = new TestModel("Test", null, Colour.Red, pieces);
+
+        Move move = new Move(pieceA, 5, 5);
+        model.playInModel(move);
+        assertEquals("down/right jump not played correctly", null, model.getPiece(4,4));
+
+    }
+
+    @Test
+    public void testInitialise() {
+        Set<Piece> pieces = new HashSet<Piece>();
+        Piece pieceWhite = new Piece(Colour.White, 0, 0);
+        Piece pieceRed = new Piece(Colour.Red, 0, 0);
+        for (int j = 0; j < 4; j ++) {
+            for (int i = 0; i < 10; i ++) {
+                if ((i + j) % 2 != 0) {
+                    pieceWhite.setX(i);
+                    pieceWhite.setY(j);
+                    pieces.add(pieceWhite);
+                }
+            }
+        }
+        for (int j = 0; j < 4; j ++) {
+            for (int i = 0; i < 10; i ++) {
+                if ((i + j) % 2 != 0) {
+                    pieceRed.setX(i);
+                    pieceRed.setY(j);
+                    pieces.add(pieceRed);
+                }
+            }
+        }
+    }
+
 }
