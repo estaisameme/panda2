@@ -153,8 +153,13 @@ public class DraughtsModel {
     // @param player the Colour of the player for whom the Moves should be generated.
     // @return a Set of valid Moves for a player.
     private Set<Move> validMoves(Colour player) {
-        //TODO:
-        return new HashSet<Move>();
+        Set<Move> validatedMoves = new HashSet<Move>();
+        for(Piece piece: this.pieces){
+            if(piece.getColour() == player){
+                validatedMoves.addAll(validMoves(player,piece,1,false));
+            }
+        }
+        return validatedMoves;
     }
 
     // Returns the Set of valid Moves for a normal Piece. These will only be one move ahead.
@@ -171,8 +176,39 @@ public class DraughtsModel {
         Set<Move> validMoves = new HashSet<Move>();
         if (player.equals(Colour.Red)) yOffset = -yOffset;
         if (!jumpOnly) {
-            if (isEmpty(piece.getX() - 1, piece.getY() + yOffset)) {
-                validMoves.add(new Move(piece, piece.getX() - 1, piece.getY() + yOffset));
+            if(piece.isKing() == true){//If the piece is a king, the valid moves is called backwards and forwards
+                for(int i=0;i<2;i++){
+                    if (isEmpty(piece.getX() - 1, piece.getY() + yOffset)) {//Left move
+                        validMoves.add(new Move(piece, piece.getX() - 1, piece.getY() + yOffset));
+                    }else {
+                        if (isEmpty(piece.getX() - 2, piece.getY() + (yOffset * 2)) && (getPiece(piece.getX() - 1, piece.getY() + yOffset).getColour() != player)) {//Left jump
+                            validMoves.add(new Move(piece, piece.getX() - 2, piece.getY() + (yOffset * 2)));
+                        }
+                    }
+                    if (isEmpty(piece.getX() + 1, piece.getY() + yOffset)) {//Right move
+                        validMoves.add(new Move(piece, piece.getX() + 1, piece.getY() + yOffset));
+                    }else{
+                        if (isEmpty(piece.getX() + 2, piece.getY() + (yOffset*2)) && (getPiece(piece.getX() + 1, piece.getY() + yOffset).getColour() != player)) {//Right jump
+                            validMoves.add(new Move(piece, piece.getX() + 2, piece.getY() + (yOffset*2)));
+                        }
+                    }
+                    yOffset = -yOffset;
+                }
+            }else {
+                if (isEmpty(piece.getX() - 1, piece.getY() + yOffset)) {
+                    validMoves.add(new Move(piece, piece.getX() - 1, piece.getY() + yOffset));
+                }else {
+                    if (isEmpty(piece.getX() - 2, piece.getY() + (yOffset * 2)) && (getPiece(piece.getX() - 1, piece.getY() + yOffset).getColour() != player)) {
+                        validMoves.add(new Move(piece, piece.getX() - 2, piece.getY() + (yOffset * 2)));
+                    }
+                }
+                if (isEmpty(piece.getX() + 1, piece.getY() + yOffset)) {
+                    validMoves.add(new Move(piece, piece.getX() + 1, piece.getY() + yOffset));
+                }else{
+                    if (isEmpty(piece.getX() + 2, piece.getY() + (yOffset*2)) && (getPiece(piece.getX() + 1, piece.getY() + yOffset).getColour() != player)) {
+                        validMoves.add(new Move(piece, piece.getX() + 2, piece.getY() + (yOffset*2)));
+                    }
+                }
             }
         }
         //TODO: We have given an implementation of how to calculate one of the valid
