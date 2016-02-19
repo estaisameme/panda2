@@ -210,6 +210,25 @@ public class DraughtsModel {
                     }
                 }
             }
+        }else{
+            if(piece.isKing() == true){//If the piece is a king, the valid moves is called backwards and forwards
+                for(int i=0;i<2;i++){
+                    if (isEmpty(piece.getX() - 2, piece.getY() + (yOffset * 2)) && (getPiece(piece.getX() - 1, piece.getY() + yOffset).getColour() != player)) {//Left jump
+                        validMoves.add(new Move(piece, piece.getX() - 2, piece.getY() + (yOffset * 2)));
+                    }
+                    if (isEmpty(piece.getX() + 2, piece.getY() + (yOffset*2)) && (getPiece(piece.getX() + 1, piece.getY() + yOffset).getColour() != player)) {//Right jump
+                        validMoves.add(new Move(piece, piece.getX() + 2, piece.getY() + (yOffset*2)));
+                    }
+                    yOffset = -yOffset;
+                }
+            }else {
+                if (isEmpty(piece.getX() - 2, piece.getY() + (yOffset * 2)) && (getPiece(piece.getX() - 1, piece.getY() + yOffset).getColour() != player)) {
+                    validMoves.add(new Move(piece, piece.getX() - 2, piece.getY() + (yOffset * 2)));
+                }
+                if (isEmpty(piece.getX() + 2, piece.getY() + (yOffset*2)) && (getPiece(piece.getX() + 1, piece.getY() + yOffset).getColour() != player)) {
+                    validMoves.add(new Move(piece, piece.getX() + 2, piece.getY() + (yOffset*2)));
+                }
+            }
         }
         //TODO: We have given an implementation of how to calculate one of the valid
         // moves (single move to the left), it's your job now to calculate the rest.
