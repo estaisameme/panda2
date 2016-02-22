@@ -1,6 +1,7 @@
 package draughts;
 
 import java.awt.*;
+import java.security.Permission;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -298,6 +299,27 @@ public class DraughtsModel {
      */
     public boolean isGameOver() {
         //TODO:
+        int redPieceCount = 0;
+        int whitePieceCount = 0;
+        for(Piece piece: this.pieces){
+            if (piece.getColour() == Colour.Red) {
+                redPieceCount++;
+            }
+            if (piece.getColour() == Colour.White) {
+                whitePieceCount++;
+            }
+        }
+        if(getCurrentPlayer() == Colour.Red && validMoves(Colour.Red).size() == 0) {
+            return true;
+        }
+        if(getCurrentPlayer() == Colour.White && validMoves(Colour.White).size() == 0) {
+            return true;
+        }
+
+        if (redPieceCount == 0 || whitePieceCount == 0) {
+            return true;
+        }
+
         return false;
     }
 
