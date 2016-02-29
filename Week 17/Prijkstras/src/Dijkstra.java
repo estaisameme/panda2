@@ -15,7 +15,11 @@ public class Dijkstra {
         // visit in your shortest path from origin to destination.
         List<Node<Integer>> visitedNodes = new ArrayList<Node<Integer>>();
         Node<Integer> startNode = this.dijkGraph.getNode(origin);
-        List<Integer> tentativeWeights = new ArrayList<Integer>(this.dijkGraph.getNodes().size());
+        List<Integer> tentativeWeights = new ArrayList<Integer>();
+        for(int i = 0;i < this.dijkGraph.getNodes().size(),i++){
+            tentativeWeights.add(999);
+            permanentWeights.add(999);
+        }
         List<Integer> permanentWeights = new ArrayList<Integer>(this.dijkGraph.getNodes().size());
         List<Integer> shortestPathInv = new ArrayList<Integer>();
         List<Integer> shortestPath = new ArrayList<Integer>();
