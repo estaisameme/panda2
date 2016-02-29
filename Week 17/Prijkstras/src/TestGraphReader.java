@@ -17,7 +17,7 @@ public class TestGraphReader extends GraphReader<Integer, Integer> {
      */
     @Override
     public Graph<Integer, Integer> readGraph(String filename) throws IOException {
-        InputStream input = this.getClass().getResourceAsStream("/" + filename);
+        InputStream input = this.getClass().getResourceAsStream("/resources/" + filename);
         if (input == null) {
             System.err.println("Could not load resource in ScotlandYardGraphReader: " + filename);
             System.exit(1);
