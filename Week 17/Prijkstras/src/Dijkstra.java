@@ -16,11 +16,11 @@ public class Dijkstra {
         List<Node<Integer>> visitedNodes = new ArrayList<Node<Integer>>();
         Node<Integer> startNode = this.dijkGraph.getNode(origin);
         List<Integer> tentativeWeights = new ArrayList<Integer>();
-        for(int i = 0;i < this.dijkGraph.getNodes().size(),i++){
+        List<Integer> permanentWeights = new ArrayList<Integer>(this.dijkGraph.getNodes().size());
+        for(int i = 0;i < this.dijkGraph.getNodes().size();i++){
             tentativeWeights.add(999);
             permanentWeights.add(999);
         }
-        List<Integer> permanentWeights = new ArrayList<Integer>(this.dijkGraph.getNodes().size());
         List<Integer> shortestPathInv = new ArrayList<Integer>();
         List<Integer> shortestPath = new ArrayList<Integer>();
 
@@ -35,11 +35,11 @@ public class Dijkstra {
                 for(Edge edge:tempEdges){
                     if(visitedNodes.contains(edge.getTarget())){
                     }else{
-                        if(tentativeWeights.get(Integer.parseInt((String) edge.getTarget().getIndex())).equals(999)){
-                            tentativeWeights.set(Integer.parseInt((String) edge.getTarget().getIndex()),permanentWeights.get(Integer.parseInt((String)edge.getSource().getIndex())) + Integer.parseInt((String) edge.getData()));
+                        if(tentativeWeights.get(Integer.parseInt((String.valueOf(edge.getTarget().getIndex())))).equals(999)){
+                            tentativeWeights.set(Integer.parseInt(String.valueOf(edge.getTarget().getIndex())) ,permanentWeights.get(Integer.parseInt(String.valueOf(edge.getSource().getIndex()))) + Integer.parseInt(String.valueOf(edge.getData())));
                         }else{
-                            if(tentativeWeights.get(Integer.parseInt((String) edge.getTarget().getIndex())) > permanentWeights.get(Integer.parseInt((String)edge.getSource().getIndex())) + Integer.parseInt((String) edge.getData())){
-                                tentativeWeights.set(Integer.parseInt((String) edge.getTarget().getIndex()),permanentWeights.get(Integer.parseInt((String)edge.getSource().getIndex())) + Integer.parseInt((String) edge.getData()));
+                            if(tentativeWeights.get(Integer.parseInt(String.valueOf(edge.getTarget().getIndex())) ) > permanentWeights.get(Integer.parseInt(String.valueOf(edge.getSource().getIndex()))) + Integer.parseInt(String.valueOf(edge.getData()))){
+                                tentativeWeights.set(Integer.parseInt(String.valueOf(edge.getTarget().getIndex())),permanentWeights.get(Integer.parseInt(String.valueOf(edge.getSource().getIndex()))) + Integer.parseInt(String.valueOf(edge.getData())));
                             }
                         }
                     }
@@ -63,8 +63,8 @@ public class Dijkstra {
         int index = 999;
         while(index != 0){
             for(Edge edge:workingedges){
-                if(Integer.parseInt((String) edge.getData()) == (permanentWeights.get(Integer.parseInt((String) edge.getTarget().getIndex())) - permanentWeights.get(Integer.parseInt((String) edge.getSource().getIndex())))){
-                    index = Integer.parseInt((String) edge.getSource().getIndex());
+                if(Integer.parseInt(String.valueOf(edge.getData())) == (permanentWeights.get(Integer.parseInt(String.valueOf(edge.getTarget().getIndex()))) - permanentWeights.get(Integer.parseInt(String.valueOf(edge.getSource().getIndex()))))){
+                    index = Integer.parseInt(String.valueOf(edge.getSource().getIndex()));
                     shortestPathInv.add(index);
                     break;
                 }
