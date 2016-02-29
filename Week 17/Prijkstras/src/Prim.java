@@ -10,28 +10,36 @@ public class Prim {
     public Prim(Graph<Integer, Integer> graph) {
         //TODO: Using the passed in graph, implement Prims algorithm in this
         // class.
-        Edge tentativeWeight = graph.getEdgesFrom(graph.getNode(1)).get(0);//ArrayList<Integer>(graph.getNodes().size());
-        Node startNode = graph.getNode(0);
+        //ArrayList<Integer>(graph.getNodes().size());
+        Node startNode = graph.getNode(1);
         visitedNodes.add(startNode);
-        while(!(visitedNodes.equals(graph.getNodes()))){
+        while(visitedNodes.size() < (graph.getNodes().size())){
+            Edge tentativeWeight = graph.getEdgesFrom(graph.getNode(1)).get(0);
             for(Node node:visitedNodes){
                 List<Edge<Integer, Integer>> tempEdges = graph.getEdgesFrom(node);
                 Edge temp = new Edge(new Node(1),new Node(1),999);
                 for(Edge edge:tempEdges){
-                    if(usedEdges.contains(edge)){
+                    boolean contains = false;
+                    for(Edge usededge: usedEdges){
+                        if((String.valueOf(edge.getSource()).equals(String.valueOf(usededge.getSource())) && String.valueOf(edge.getTarget()).equals(String.valueOf(usededge.getTarget())) && String.valueOf(edge.getData()).equals(String.valueOf(usededge.getData())))||(String.valueOf(edge.getSource()).equals(String.valueOf(usededge.getTarget())) && String.valueOf(edge.getTarget()).equals(String.valueOf(usededge.getSource())) && String.valueOf(edge.getData()).equals(String.valueOf(usededge.getData())))){
+                            contains = true;
+                        }
+                    }
+                    if(contains == true){
                     }else{
-                        if(Integer.parseInt((String) edge.getData()) < Integer.parseInt((String) temp.getData())){
+                        if(Integer.parseInt(String.valueOf(edge.getData()) ) < Integer.parseInt(String.valueOf(temp.getData()))){
                             temp = edge;
                         }
                     }
                 }
-                if(Integer.parseInt((String) tentativeWeight.getData()) > Integer.parseInt((String)temp.getData()) && !visitedNodes.contains(temp.getTarget())){
+                if(Integer.parseInt(String.valueOf(tentativeWeight.getData())) > Integer.parseInt(String.valueOf(temp.getData())) && !visitedNodes.contains(temp.getTarget())){
                     tentativeWeight = temp;
                 }
 
             }
             visitedNodes.add(tentativeWeight.getTarget());
-            usedEdges.add(tentativeWeight);
+            usedEdges.add(new Edge(tentativeWeight.getSource(),tentativeWeight.getTarget(),tentativeWeight.getData()));
+           // usedEdges.add(new Edge(tentativeWeight.getTarget(),tentativeWeight.getSource(),tentativeWeight.getData()));
 
         }
     }
@@ -40,10 +48,10 @@ public class Prim {
         //TODO: You should return a new graph that represents the minimum
         // spanning tree of the graph.
         Graph minimumST = new UndirectedGraph<>();
-        for(Node node:visitedNodes){
+        for(Node node:this.visitedNodes){
             minimumST.add(node);
         }
-        for(Edge edge:usedEdges){
+        for(Edge edge:this.usedEdges){
             minimumST.add((edge));
         }
 

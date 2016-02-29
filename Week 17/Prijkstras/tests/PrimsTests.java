@@ -25,7 +25,7 @@ public class PrimsTests {
         containsAllEdges(expectedEdges, edges);
     }
 
-    @Test
+/*    @Test
     public void testPrimsOnMediumGraph() throws Exception {
         TestGraphReader graphReader = new TestGraphReader();
         Graph<Integer, Integer> graph = graphReader.readGraph("medium-graph.txt");
@@ -42,7 +42,7 @@ public class PrimsTests {
 
         containsAllNodes(expectedGraph.getNodes(), minimumSpanningTree.getNodes());
         containsAllEdges(expectedEdges, edges);
-    }
+    }*/
 
     private void containsAllNodes(List<Node<Integer>> expected, List<Node<Integer>> actual) {
         for (Node<Integer> node : expected) {
