@@ -32,7 +32,13 @@ public class Prim {
                         }
                     }
                 }
-                if(Integer.parseInt(String.valueOf(tentativeWeight.getData())) > Integer.parseInt(String.valueOf(temp.getData())) && !visitedNodes.contains(temp.getTarget())){
+                boolean containsagain = false;
+                for(Node nodel:visitedNodes){
+                    if(Integer.parseInt(toString().valueOf(nodel.getIndex())) == Integer.parseInt(String.valueOf(temp.getTarget()))){
+                        containsagain = true;
+                    }
+                }
+                if(Integer.parseInt(String.valueOf(tentativeWeight.getData())) > Integer.parseInt(String.valueOf(temp.getData())) && containsagain == false){
                     tentativeWeight = temp;
                 }
 

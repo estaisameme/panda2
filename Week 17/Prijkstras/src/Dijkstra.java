@@ -16,7 +16,7 @@ public class Dijkstra {
         List<Node<Integer>> visitedNodes = new ArrayList<Node<Integer>>();
         Node<Integer> startNode = this.dijkGraph.getNode(origin);
         List<Integer> tentativeWeights = new ArrayList<Integer>();
-        List<Integer> permanentWeights = new ArrayList<Integer>(this.dijkGraph.getNodes().size());
+        List<Integer> permanentWeights = new ArrayList<Integer>();
         for(int i = 0;i < this.dijkGraph.getNodes().size();i++){
             tentativeWeights.add(999);
             permanentWeights.add(999);
@@ -24,14 +24,14 @@ public class Dijkstra {
         List<Integer> shortestPathInv = new ArrayList<Integer>();
         List<Integer> shortestPath = new ArrayList<Integer>();
 
-        while(!visitedNodes.equals(this.dijkGraph.getNodes())){
+        while(visitedNodes.size() < (dijkGraph.getNodes().size())){
             for(Integer number:tentativeWeights){
                 number = 999;
             }
             visitedNodes.add(startNode);
             permanentWeights.set(0,0);
             for(Node node: visitedNodes){
-                List<Edge<Integer, Integer>> tempEdges = this.dijkGraph.getEdgesFrom(node);
+                List<Edge<Integer, Integer>> tempEdges = dijkGraph.getEdgesFrom(node);
                 for(Edge edge:tempEdges){
                     if(visitedNodes.contains(edge.getTarget())){
                     }else{
