@@ -12,6 +12,10 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected MapQueue<Integer, Token> queue;
     protected Integer gameId;
     protected Random random;
+    protected Integer numberOfDetectives;
+    protected List<Boolean> rounds;
+    protected ScotlandYardGraph graph;
+    protected List<PlayerData> listOfPlayerData = new ArrayList<PlayerData>();
 
     /**
      * Constructs a new ScotlandYard object. This is used to perform all of the game logic.
@@ -26,6 +30,10 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         this.queue = queue;
         this.gameId = gameId;
         this.random = new Random();
+        this.numberOfDetectives = numberOfDetectives;
+        this.rounds = rounds;
+        this.graph = graph;
+
         //TODO:
     }
 
@@ -159,8 +167,10 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true if the player has joined successfully.
      */
     public boolean join(Player player, Colour colour, int location, Map<Ticket, Integer> tickets) {
-        //TODO:
-        return false;
+        try {
+            listOfPlayerData.add(new PlayerData(player,colour,location,tickets));
+        }catch (Exception e){return false;}
+        return true;
     }
 
     /**
@@ -171,8 +181,12 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return The list of players.
      */
     public List<Colour> getPlayers() {
+        List<Colour> ethnicConflict = new ArrayList<Colour>();
+        for(PlayerData player: listOfPlayerData){
+            ethnicConflict.add(player.getColour());
+        }
         //TODO:
-        return new ArrayList<Colour>();
+        return ethnicConflict;
     }
 
     /**
@@ -196,7 +210,11 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * MrX is revealed in round n when {@code rounds.get(n)} is true.
      */
     public int getPlayerLocation(Colour colour) {
-        //TODO:
+        for(PlayerData player: listOfPlayerData){
+            if(player.getColour().equals(colour)){
+                return player.getLocation();
+            }
+        }
         return 0;
     }
 
@@ -208,7 +226,11 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return The number of tickets of the given player.
      */
     public int getPlayerTickets(Colour colour, Ticket ticket) {
-        //TODO:
+        for(PlayerData player: listOfPlayerData){
+            if(player.getColour().equals(colour)){
+                return player.getTickets().get(ticket);
+            }
+        }
         return -1;
     }
 
@@ -219,7 +241,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is over, false otherwise.
      */
     public boolean isGameOver() {
-        //TODO:
         return false;
     }
 
@@ -229,7 +250,9 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is ready to be played, false otherwise.
      */
     public boolean isReady() {
-        //TODO:
+        if(this.numberOfDetectives.equals(listOfPlayerData.size() - 1)){
+            return true;
+        }
         return false;
     }
 
@@ -264,8 +287,8 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return a list of booleans that indicate the turns where MrX reveals himself.
      */
     public List<Boolean> getRounds() {
-        //TODO:
-        return new ArrayList<Boolean>();
+        return this.rounds;
+
     }
 
 }
