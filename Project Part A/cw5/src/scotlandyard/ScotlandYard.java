@@ -16,7 +16,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected List<Boolean> rounds;
     protected ScotlandYardGraph graph;
     protected List<PlayerData> listOfPlayerData = new ArrayList<PlayerData>();
-
+    protected Colour currentPlayer;
     /**
      * Constructs a new ScotlandYard object. This is used to perform all of the game logic.
      *
@@ -262,8 +262,18 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return The colour of the current player.
      */
     public Colour getCurrentPlayer() {
-        //TODO:
-        return Colour.Black;
+        Colour returnPlayer = currentPlayer;
+        Boolean updatePlayer = false;
+        for(PlayerData player:listOfPlayerData){
+            if(updatePlayer.equals(true)){
+                currentPlayer = player.getColour();
+                break;
+            }
+            if(player.getColour().equals(currentPlayer)){
+                updatePlayer = true;
+            }
+        }
+        return returnPlayer;
     }
 
     /**
