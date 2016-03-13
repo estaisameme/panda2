@@ -95,7 +95,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         for(PlayerData player: listOfPlayerData){
             if(player.getColour().equals((colour))){
 
-                player.getPlayer().notify(player.getLocation(), validMoves(colour), token,);
+                player.getPlayer().notify(player.getLocation(), validMoves(colour), token, this);
             }
         }
     }

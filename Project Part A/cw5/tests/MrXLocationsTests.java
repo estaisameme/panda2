@@ -61,7 +61,6 @@ public class MrXLocationsTests  {
         game.turn();
         game.turn();
 
-
         MoveTicket mt = player.move;
         assertEquals("If Mr X is due to display himself N rounds into the game, the display data" +
                     " should be accurate at that round", mt.target, game.getPlayerLocation(Colour.Black));

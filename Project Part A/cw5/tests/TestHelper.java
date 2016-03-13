@@ -177,7 +177,6 @@ public class TestHelper {
         public List<Move> moves;
         public Move move;
         public int location;
-        public Colour playerCol = Colour.Black;
 
         public void notify(int location, List<Move> moves, Integer token, Receiver receiver) {
             this.moves = moves;
