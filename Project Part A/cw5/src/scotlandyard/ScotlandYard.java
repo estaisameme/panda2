@@ -17,6 +17,8 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected ScotlandYardGraph graph;
     protected List<PlayerData> listOfPlayerData = new ArrayList<PlayerData>();
     protected Colour currentPlayer;
+    protected Integer lastKnownLocOfMrX;
+    protected int roundsMrXPlayed;
     /**
      * Constructs a new ScotlandYard object. This is used to perform all of the game logic.
      *
@@ -33,8 +35,10 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         this.numberOfDetectives = numberOfDetectives;
         this.rounds = rounds;
         this.graph = graph;
+        this.lastKnownLocOfMrX = 0;
+        this.roundsMrXPlayed = 0;
+        this.currentPlayer = Colour.Black;
 
-        //TODO:
     }
 
     /**
@@ -88,13 +92,34 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     private void notifyPlayer(Colour colour, Integer token) {
         //TODO:
+        for(PlayerData player: listOfPlayerData){
+            if(player.getColour().equals((colour))){
+
+                player.getPlayer().notify(player.getLocation(), validMoves(colour), token,);
+            }
+        }
     }
 
     /**
      * Passes priority onto the next player whose turn it is to play.
      */
     protected void nextPlayer() {
-        //TODO:
+        Boolean updatePlayer = false;
+        for(PlayerData player:listOfPlayerData){
+            if(updatePlayer.equals(true)){
+                currentPlayer = player.getColour();
+                break;
+            }
+            if(player.getColour().equals(currentPlayer)){
+                if(player.getColour().equals(Colour.Black)){
+                    roundsMrXPlayed++;
+                }
+                if(listOfPlayerData.indexOf(player) == (listOfPlayerData.size())){
+                    currentPlayer = Colour.Black;
+                }
+                updatePlayer = true;
+            }
+        }
     }
 
     /**
@@ -143,7 +168,13 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     public List<Move> validMoves(Colour player) {
         //TODO:
-        return new ArrayList<Move>();
+        List<Move> listOfMoves = new ArrayList<Move>();
+        for(PlayerData lstPlayer:listOfPlayerData){
+            if(lstPlayer.getColour().equals(player)){
+                graph.generateMoves(graph,lstPlayer,listOfMoves,listOfPlayerData);
+            }
+        }
+        return listOfMoves;
     }
 
     /**
@@ -185,7 +216,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         for(PlayerData player: listOfPlayerData){
             ethnicConflict.add(player.getColour());
         }
-        //TODO:
         return ethnicConflict;
     }
 
@@ -212,7 +242,15 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     public int getPlayerLocation(Colour colour) {
         for(PlayerData player: listOfPlayerData){
             if(player.getColour().equals(colour)){
-                return player.getLocation();
+                if(player.getColour().equals(Colour.Black)){
+                    if(rounds.get(getRound()).equals(true)){
+                        lastKnownLocOfMrX = player.getLocation();
+                    }else{
+                    }
+                    return lastKnownLocOfMrX;
+                }else{
+                    return player.getLocation();
+                }
             }
         }
         return 0;
@@ -262,18 +300,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return The colour of the current player.
      */
     public Colour getCurrentPlayer() {
-        Colour returnPlayer = currentPlayer;
-        Boolean updatePlayer = false;
-        for(PlayerData player:listOfPlayerData){
-            if(updatePlayer.equals(true)){
-                currentPlayer = player.getColour();
-                break;
-            }
-            if(player.getColour().equals(currentPlayer)){
-                updatePlayer = true;
-            }
-        }
-        return returnPlayer;
+        return currentPlayer;
     }
 
     /**
@@ -284,8 +311,8 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return the number of moves MrX has played.
      */
     public int getRound() {
-        //TODO:
-        return -1;
+
+        return roundsMrXPlayed;
     }
 
     /**

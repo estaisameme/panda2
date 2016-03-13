@@ -17,7 +17,7 @@ public class ValidMovesHelper {
         rounds.add(true);
         rounds.add(true);
         rounds.add(true);
-        return TestHelper.getStoppedGame(numDetectives, rounds, "test_resources/small_map.txt");
+        return TestHelper.getStoppedGame(numDetectives, rounds, "small_map.txt");
     }
 
 }
