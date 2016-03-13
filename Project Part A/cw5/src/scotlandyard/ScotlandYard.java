@@ -94,7 +94,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         //TODO:
         for(PlayerData player: listOfPlayerData){
             if(player.getColour().equals((colour))){
-
                 player.getPlayer().notify(player.getLocation(), validMoves(colour), token, this);
             }
         }
@@ -105,6 +104,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     protected void nextPlayer() {
         Boolean updatePlayer = false;
+
         for(PlayerData player:listOfPlayerData){
             if(updatePlayer.equals(true)){
                 currentPlayer = player.getColour();
@@ -114,7 +114,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
                 if(player.getColour().equals(Colour.Black)){
                     roundsMrXPlayed++;
                 }
-                if(listOfPlayerData.indexOf(player) == (listOfPlayerData.size())){
+                if(listOfPlayerData.indexOf(player) == (listOfPlayerData.size() - 1)){
                     currentPlayer = Colour.Black;
                 }
                 updatePlayer = true;
@@ -140,6 +140,20 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     protected void play(MoveTicket move) {
         //TODO:
+        if(move.colour.equals(currentPlayer)){
+            PlayerData currentDetective = getActualPlayer(currentPlayer);
+            PlayerData mrX = getActualPlayer(Colour.Black);
+
+            if(move.colour.equals(Colour.Black)){//Mr X
+                mrX.removeTicket(move.ticket);
+                mrX.setLocation(move.target);
+
+            }else{ //Detectives
+                currentDetective.removeTicket(move.ticket);
+                mrX.addTicket(move.ticket);
+                currentDetective.setLocation(move.target);
+            }
+        }
     }
 
     /**
@@ -149,6 +163,27 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     protected void play(MoveDouble move) {
         //TODO:
+        if(move.colour.equals(currentPlayer)){
+            PlayerData currentDetective = getActualPlayer(currentPlayer);
+            PlayerData mrX = getActualPlayer(Colour.Black);
+            if(move.colour.equals(Colour.Black)){//Mr X
+                roundsMrXPlayed++;
+                mrX.removeTicket(move.move1.ticket);
+                mrX.removeTicket(move.move2.ticket);
+                mrX.removeTicket(Ticket.Double);
+                mrX.setLocation(move.move2.target);
+            }
+        }
+    }
+
+
+    public PlayerData getActualPlayer(Colour colour){
+        for(PlayerData player: listOfPlayerData){
+            if(player.getColour().equals(colour)){
+                return player;
+            }
+        }
+        return null;
     }
 
     /**
@@ -157,7 +192,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param move the MovePass to play.
      */
     protected void play(MovePass move) {
-        //TODO:
+
     }
 
     /**
@@ -240,20 +275,16 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * MrX is revealed in round n when {@code rounds.get(n)} is true.
      */
     public int getPlayerLocation(Colour colour) {
-        for(PlayerData player: listOfPlayerData){
-            if(player.getColour().equals(colour)){
-                if(player.getColour().equals(Colour.Black)){
-                    if(rounds.get(getRound()).equals(true)){
-                        lastKnownLocOfMrX = player.getLocation();
-                    }else{
-                    }
-                    return lastKnownLocOfMrX;
-                }else{
-                    return player.getLocation();
-                }
+        PlayerData player = getActualPlayer(colour);
+        if(player.getColour().equals(Colour.Black)){
+            if(rounds.get(getRound()).equals(true)){
+                lastKnownLocOfMrX = player.getLocation();
+            }else{
             }
+            return lastKnownLocOfMrX;
+        }else {
+            return player.getLocation();
         }
-        return 0;
     }
 
     /**

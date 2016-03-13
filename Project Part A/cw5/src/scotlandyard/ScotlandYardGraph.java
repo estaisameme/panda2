@@ -11,11 +11,13 @@ public class ScotlandYardGraph extends UndirectedGraph<Integer, Transport> {
         //TODO: Use this to help generate valid moves if you would like.
         Boolean doubleYes = false;
         Boolean detectiveCollision = false;
+        Boolean boat = false;
         int numSecrets = lstPlayer.getTickets().get(Ticket.Secret);
 
         if(lstPlayer.getTickets().get(Ticket.Double) > 0){doubleYes = true;}
 
         for(Edge<Integer, scotlandyard.Transport> edge: graph.getEdgesFrom(graph.getNode(lstPlayer.getLocation()))){
+
             for(PlayerData players:listOfPLayerData){
                 if(edge.getTarget().getIndex().equals(players.getLocation()) && !(players.getColour().equals(Colour.Black))){
                     detectiveCollision = true;
@@ -23,20 +25,20 @@ public class ScotlandYardGraph extends UndirectedGraph<Integer, Transport> {
                 }
             }
             if(detectiveCollision){}else {
-                if (numSecrets > 0 && edge.getData().equals(Transport.Boat)) {
-                    Move superSecretBoatMove = MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex());
-                    listOfMoves.add(superSecretBoatMove);
+
+                if (lstPlayer.getTickets().get(Ticket.fromTransport(edge.getData())) > 0 || (numSecrets > 0 && edge.getData().equals(Transport.Boat))) {
+
                     if (doubleYes) {
 
-                    }
-                }
-                if (lstPlayer.getTickets().get(Ticket.fromTransport(edge.getData())) > 0 || (numSecrets > 0 && edge.getData().equals(Transport.Boat))) {
-                    if (doubleYes) {
-                        Move move = MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex());
-                        listOfMoves.add(move);
-                        if (numSecrets > 0) {
-                            move = MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex());
+                        if(!(edge.getData().equals(Transport.Boat))){
+                            Move move = MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex());
                             listOfMoves.add(move);
+                        }else{
+                            boat = true;
+                        }
+                        if (numSecrets > 0 ||(edge.getData().equals(Transport.Boat))) {
+                            Move secretMove = MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex());
+                            listOfMoves.add(secretMove);
                         }
                         for (Edge<Integer, scotlandyard.Transport> edge1 : graph.getEdgesFrom(edge.getTarget())) {
                             for (PlayerData players : listOfPLayerData) {
@@ -47,29 +49,60 @@ public class ScotlandYardGraph extends UndirectedGraph<Integer, Transport> {
                             }
                             if (detectiveCollision) {
                             } else {
-                                if (numSecrets > 1) {
+                                if (numSecrets > 1 || ((edge1.getData().equals(Transport.Boat)) && boat)) {
                                     Move secretMove = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge1.getTarget().getIndex()));
                                     listOfMoves.add(secretMove);
                                 }
-                                if (edge.getData().equals(edge1.getData())) {
-                                    if (lstPlayer.getTickets().get(Ticket.fromTransport(edge.getData())) > 1) {
-                                        Move move3 = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
-                                        listOfMoves.add(move3);
+                                if(!(edge1.getData().equals(Transport.Boat))){
+                                    if(boat){
+                                        if (lstPlayer.getTickets().get(Ticket.fromTransport(edge1.getData())) > 0) {
+                                            Move move3 = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
+                                            listOfMoves.add(move3);
+                                        }
                                     }
-                                } else {
-                                    if (lstPlayer.getTickets().get(Ticket.fromTransport(edge1.getData())) > 0) {
-                                        Move move3 = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
-                                        listOfMoves.add(move3);
+                                    else {
+                                        if (edge.getData().equals(edge1.getData())) {
+                                            if (lstPlayer.getTickets().get(Ticket.fromTransport(edge.getData())) > 1) {
+                                                Move move3 = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
+                                                listOfMoves.add(move3);
+                                                if(numSecrets > 0){
+                                                    Move anotherGoddamnMove = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
+                                                    Move yetAnotherGoddamnMove = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge1.getTarget().getIndex()));
+                                                    listOfMoves.add(anotherGoddamnMove);
+                                                    listOfMoves.add(yetAnotherGoddamnMove);
+                                                }
+                                            }
+                                        } else {
+                                            if (lstPlayer.getTickets().get(Ticket.fromTransport(edge1.getData())) > 0) {
+                                                Move move3 = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
+                                                listOfMoves.add(move3);
+                                                if(numSecrets > 0){
+                                                    Move anotherGoddamnMove = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge1.getData()), edge1.getTarget().getIndex()));
+                                                    Move yetAnotherGoddamnMove = MoveDouble.instance(lstPlayer.getColour(), MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex()), MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge1.getTarget().getIndex()));
+                                                    listOfMoves.add(anotherGoddamnMove);
+                                                    listOfMoves.add(yetAnotherGoddamnMove);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    if(!boat){
+                                        if(numSecrets > 0){
+                                            Move goddamnBoatMove = MoveDouble.instance(lstPlayer.getColour(),MoveTicket.instance(lstPlayer.getColour(),Ticket.fromTransport(edge.getData()),edge.getTarget().getIndex()),MoveTicket.instance(lstPlayer.getColour(),Ticket.Secret,edge1.getTarget().getIndex()));
+                                            listOfMoves.add((goddamnBoatMove));
+                                        }
                                     }
                                 }
                             }
                         }
                     }else{
-                        Move move = MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex());
-                        listOfMoves.add(move);
-                        if (numSecrets > 0) {
-                            move = MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex());
+                        if(!(edge.getData().equals(Transport.Boat))){
+                            Move move = MoveTicket.instance(lstPlayer.getColour(), Ticket.fromTransport(edge.getData()), edge.getTarget().getIndex());
                             listOfMoves.add(move);
+                        }
+                        if (numSecrets > 0 ||(edge.getData().equals(Transport.Boat))) {
+                            Move secretMove = MoveTicket.instance(lstPlayer.getColour(), Ticket.Secret, edge.getTarget().getIndex());
+                            listOfMoves.add(secretMove);
                         }
                     }
                 }
