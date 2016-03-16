@@ -50,8 +50,8 @@ public class MoveView extends JPanel implements MouseListener {
             insert((MoveTicket) move);
         } else if (move instanceof MoveDouble) {
             MoveDouble moveDouble = (MoveDouble) move;
-            insert((MoveTicket) moveDouble.move1);
-            insert((MoveTicket) moveDouble.move2);
+            insert(moveDouble.move1);
+            insert(moveDouble.move2);
         }
     }
 
@@ -144,7 +144,7 @@ public class MoveView extends JPanel implements MouseListener {
     public void mouseReleased(MouseEvent e) {
         if (e.getSource() instanceof JLabel) {
             if (aListener != null) {
-                aListener.actionPerformed(new ActionEvent((JLabel) e.getSource(), 0, "move"));
+                aListener.actionPerformed(new ActionEvent(e.getSource(), 0, "move"));
             }
         }
     }

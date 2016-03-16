@@ -82,7 +82,7 @@ public class GameView extends JPanel implements ComponentListener, ActionListene
         //Handle actions from views and put items onto event queue as appropriate
         if (e.getActionCommand().equals("node")) {
             //Player has clicked on a node in board view
-            threadCom.putEvent("node_clicked", (Integer) e.getSource());
+            threadCom.putEvent("node_clicked", e.getSource());
         } else if (e.getActionCommand().equals("timer")) {
             //Player has run out of time for their move
             threadCom.putEvent("timer_fired", true);
@@ -91,13 +91,13 @@ public class GameView extends JPanel implements ComponentListener, ActionListene
             threadCom.putEvent("timer_warning", true);
         } else if (e.getActionCommand().equals("move")) {
             //Player has clicked on a ticket in moves view, check to see if it can be flipped
-             threadCom.putEvent("move_clicked", (JLabel) e.getSource());
+             threadCom.putEvent("move_clicked", e.getSource());
         } else if (e.getActionCommand().equals("ticket")) {
             //Player has clicked on a ticket in the players view
-            threadCom.putEvent("ticket_clicked", (Ticket) e.getSource());
+            threadCom.putEvent("ticket_clicked", e.getSource());
         } else if (e.getActionCommand().equals("hint")) {
             //Player has clicked on a ticket in the players view
-            threadCom.putEvent("hint_clicked", (Boolean) e.getSource());
+            threadCom.putEvent("hint_clicked", e.getSource());
         }
     }
 

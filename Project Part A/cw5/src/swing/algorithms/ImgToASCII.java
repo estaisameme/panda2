@@ -101,7 +101,7 @@ public class ImgToASCII {
                 count++;
             }
         }
-        return (int) runningTotal / count;
+        return runningTotal / count;
     }
 
     // Returns the correct character for a block with a

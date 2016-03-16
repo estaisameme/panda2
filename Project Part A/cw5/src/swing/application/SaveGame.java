@@ -128,8 +128,7 @@ public class SaveGame implements Serializable {
             savedMoves = moves;
             moves = new ArrayList<SaveMove>();
         }
-        if (savedMoves.size() > 0) return true;
-        return false;
+        return savedMoves.size() > 0;
     }
 
     /**
@@ -237,10 +236,10 @@ public class SaveGame implements Serializable {
             super(move.colour);
 
             moves = new ArrayList<SaveMoveTicket>();
-            MoveTicket mt1 = (MoveTicket) move.move1;
+            MoveTicket mt1 = move.move1;
             SaveMoveTicket newMove1 = new SaveMoveTicket(mt1);
             moves.add(newMove1);
-            MoveTicket mt2 = (MoveTicket) move.move2;
+            MoveTicket mt2 = move.move2;
             SaveMoveTicket newMove2 = new SaveMoveTicket(mt2);
             moves.add(newMove2);
         }

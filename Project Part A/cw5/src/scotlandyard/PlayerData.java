@@ -118,14 +118,13 @@ public class PlayerData {
     }
 
     private boolean hasTickets(MoveTicket move) {
-        if (tickets.get(move.ticket) > 0) return true;
-        else return false;
+        return tickets.get(move.ticket) > 0;
     }
 
     private boolean hasTickets(MoveDouble move) {
         if (tickets.get(Ticket.Double) > 0) {
-            MoveTicket move1 = (MoveTicket) move.move1;
-            MoveTicket move2 = (MoveTicket) move.move2;
+            MoveTicket move1 = move.move1;
+            MoveTicket move2 = move.move2;
             if (move1.ticket.equals(move2.ticket)) {
                 return tickets.get(move1.ticket) > 1;
             } else {

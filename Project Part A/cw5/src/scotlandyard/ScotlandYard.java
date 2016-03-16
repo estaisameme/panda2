@@ -19,6 +19,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected Colour currentPlayer;
     protected Integer lastKnownLocOfMrX;
     protected int roundsMrXPlayed;
+    protected List<Spectator> listOfSpectators = new ArrayList<Spectator>();
     /**
      * Constructs a new ScotlandYard object. This is used to perform all of the game logic.
      *
@@ -113,6 +114,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
             if(player.getColour().equals(currentPlayer)){
                 if(player.getColour().equals(Colour.Black)){
                     roundsMrXPlayed++;
+
                 }
                 if(listOfPlayerData.indexOf(player) == (listOfPlayerData.size() - 1)){
                     currentPlayer = Colour.Black;
@@ -128,9 +130,46 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param move the move that is to be played.
      */
     protected void play(Move move) {
-        if (move instanceof MoveTicket) play((MoveTicket) move);
-        else if (move instanceof MoveDouble) play((MoveDouble) move);
-        else if (move instanceof MovePass) play((MovePass) move);
+
+            if (move instanceof MoveTicket){
+                play((MoveTicket) move);
+                updateSpecs(move);
+            }
+            else if (move instanceof MoveDouble){
+                play((MoveDouble) move);
+                //updateSpecs(move);
+            }
+            else if (move instanceof MovePass){
+                play((MovePass) move);
+                updateSpecs(move);
+            }
+
+
+    }
+
+    protected void updateSpecs(Move move){
+        if (move.colour.equals(Colour.Black)) {
+            if (rounds.get(roundsMrXPlayed)) {
+                for (Spectator spectator : listOfSpectators) {
+                    spectator.notify(move);
+                }
+            }else{
+                for (Spectator spectator : listOfSpectators) {
+                    if(move instanceof  MoveDouble){
+                        Move hiddenX = MoveDouble.instance(Colour.Black,MoveTicket.instance(Colour.Black,null,lastKnownLocOfMrX),MoveTicket.instance(Colour.Black,null,lastKnownLocOfMrX));
+                        spectator.notify(hiddenX);
+                    }else{
+                        Move hiddenX = MoveTicket.instance(Colour.Black,null,lastKnownLocOfMrX);
+                        spectator.notify(hiddenX);
+                    }
+
+                }
+            }
+        } else {
+            for (Spectator spectator : listOfSpectators) {
+                spectator.notify(move);
+            }
+        }
     }
 
     /**
@@ -163,15 +202,23 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     protected void play(MoveDouble move) {
         //TODO:
+       /* play(move.move1);
+        play(move.move2);
+        PlayerData mrX = getActualPlayer(Colour.Black);
+        mrX.removeTicket(Ticket.Double);*/
         if(move.colour.equals(currentPlayer)){
             PlayerData currentDetective = getActualPlayer(currentPlayer);
             PlayerData mrX = getActualPlayer(Colour.Black);
             if(move.colour.equals(Colour.Black)){//Mr X
-                roundsMrXPlayed++;
                 mrX.removeTicket(move.move1.ticket);
                 mrX.removeTicket(move.move2.ticket);
                 mrX.removeTicket(Ticket.Double);
+                mrX.setLocation(move.move1.target);
+                roundsMrXPlayed++;
+                updateSpecs(move);
                 mrX.setLocation(move.move2.target);
+                updateSpecs(move.move2);
+
             }
         }
     }
@@ -220,6 +267,8 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     public void spectate(Spectator spectator) {
         //TODO:
+        listOfSpectators.add(spectator);
+
     }
 
     /**
@@ -310,6 +359,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is over, false otherwise.
      */
     public boolean isGameOver() {
+
         return false;
     }
 
@@ -319,10 +369,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is ready to be played, false otherwise.
      */
     public boolean isReady() {
-        if(this.numberOfDetectives.equals(listOfPlayerData.size() - 1)){
-            return true;
-        }
-        return false;
+        return this.numberOfDetectives.equals(listOfPlayerData.size() - 1);
     }
 
     /**
