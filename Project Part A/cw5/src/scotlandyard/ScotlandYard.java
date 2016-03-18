@@ -366,7 +366,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
             PlayerData mrX = getActualPlayer(Colour.Black);
             for (PlayerData player : listOfPlayerData) {
                 if (!(player.getColour().equals(Colour.Black))) {
-                    if (mrX.getLocation() == player.getLocation()) {
+                    if (mrX.getLocation().equals(player.getLocation())) {
                         return true;
                     }
                 }
@@ -410,8 +410,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
             }
 
         }
-
-
         return false;
     }
 
