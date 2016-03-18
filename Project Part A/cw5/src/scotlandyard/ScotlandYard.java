@@ -1,5 +1,7 @@
 package scotlandyard;
 
+import graph.Edge;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -359,6 +361,56 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is over, false otherwise.
      */
     public boolean isGameOver() {
+        if (isReady()) {
+            //MrX caught
+            PlayerData mrX = getActualPlayer(Colour.Black);
+            for (PlayerData player : listOfPlayerData) {
+                if (!(player.getColour().equals(Colour.Black))) {
+                    if (mrX.getLocation() == player.getLocation()) {
+                        return true;
+                    }
+                }
+            }
+
+            //Only one player in game
+            if (listOfPlayerData.size() == 1) {
+                return true;
+            }
+
+            //MrX out of moves
+            int numMoves = graph.getEdgesFrom(graph.getNode(mrX.getLocation())).size();
+            for(Edge<Integer, Transport> edge: graph.getEdgesFrom(graph.getNode(mrX.getLocation()))) {
+                for (PlayerData player : listOfPlayerData) {
+                    if (edge.getTarget().getIndex().equals(player.getLocation())) {
+                        numMoves--;
+                    }
+                }
+            }
+            if (numMoves == 0) {
+                return true;
+            }
+
+            //Detectives out of moves
+            int numDetectives = listOfPlayerData.size() - 1;
+            for (PlayerData player : listOfPlayerData) {
+                if (!(player.equals(mrX))) {
+                    int numEdges = graph.getEdgesFrom(graph.getNode(player.getLocation())).size();
+                    for(Edge<Integer, Transport> edge: graph.getEdgesFrom(graph.getNode(player.getLocation()))) {
+                        if (player.getTickets().get(Ticket.fromTransport(edge.getData())) < 1) {
+                            numEdges --;
+                        }
+                    }
+                    if (numEdges == 0) {
+                        numDetectives --;
+                    }
+                }
+            }
+            if (numDetectives == 0) {
+                return true;
+            }
+
+        }
+
 
         return false;
     }
