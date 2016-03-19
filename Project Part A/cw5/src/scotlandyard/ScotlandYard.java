@@ -22,6 +22,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected Integer lastKnownLocOfMrX;
     protected int roundsMrXPlayed;
     protected List<Spectator> listOfSpectators = new ArrayList<Spectator>();
+    protected Boolean mrXWins;
     /**
      * Constructs a new ScotlandYard object. This is used to perform all of the game logic.
      *
@@ -253,11 +254,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     public List<Move> validMoves(Colour player) {
         //TODO:
         List<Move> listOfMoves = new ArrayList<Move>();
-        for(PlayerData lstPlayer:listOfPlayerData){
-            if(lstPlayer.getColour().equals(player)){
-                graph.generateMoves(graph,lstPlayer,listOfMoves,listOfPlayerData);
-            }
-        }
+        graph.generateMoves(graph,getActualPlayer(player),listOfMoves,listOfPlayerData);
         return listOfMoves;
     }
 
@@ -313,7 +310,20 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     public Set<Colour> getWinningPlayers() {
         //TODO:
-        return new HashSet<Colour>();
+        HashSet<Colour> winningPlayers = new HashSet<Colour>();
+        if(isGameOver()){
+            if(mrXWins){
+                winningPlayers.add(Colour.Black);
+            }else{
+                for(PlayerData player: listOfPlayerData){
+                    if(!player.getColour().equals(Colour.Black)){
+                        winningPlayers.add(player.getColour());
+                    }
+                }
+            }
+        }
+        return winningPlayers;
+
     }
 
     /**
@@ -367,6 +377,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
             for (PlayerData player : listOfPlayerData) {
                 if (!(player.getColour().equals(Colour.Black))) {
                     if (mrX.getLocation().equals(player.getLocation())) {
+                        this.mrXWins = false;
                         return true;
                     }
                 }
@@ -374,6 +385,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
 
             //Only one player in game
             if (listOfPlayerData.size() == 1) {
+                this.mrXWins = true;
                 return true;
             }
 
@@ -387,6 +399,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
                 }
             }
             if (numMoves == 0) {
+                mrXWins = false;
                 return true;
             }
 
@@ -406,6 +419,13 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
                 }
             }
             if (numDetectives == 0) {
+                mrXWins = true;
+                return true;
+            }
+
+            //Game is over when number of turns has expired
+            if(getRound() == (rounds.size() - 1) && getCurrentPlayer().equals(Colour.Black)){
+                mrXWins = true;
                 return true;
             }
 

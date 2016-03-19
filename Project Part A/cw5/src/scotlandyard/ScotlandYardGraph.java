@@ -17,7 +17,7 @@ public class ScotlandYardGraph extends UndirectedGraph<Integer, Transport> {
         if(lstPlayer.getTickets().get(Ticket.Double) > 0){doubleYes = true;}
 
         for(Edge<Integer, scotlandyard.Transport> edge: graph.getEdgesFrom(graph.getNode(lstPlayer.getLocation()))){
-
+            detectiveCollision = false;
             for(PlayerData players:listOfPLayerData){
                 if(edge.getTarget().getIndex().equals(players.getLocation()) && !(players.getColour().equals(Colour.Black))){
                     detectiveCollision = true;
@@ -42,7 +42,7 @@ public class ScotlandYardGraph extends UndirectedGraph<Integer, Transport> {
                         }
                         for (Edge<Integer, scotlandyard.Transport> edge1 : graph.getEdgesFrom(edge.getTarget())) {
                             for (PlayerData players : listOfPLayerData) {
-                                if (edge.getTarget().getIndex().equals(players.getLocation()) && !(players.getColour().equals(Colour.Black))) {
+                                if (edge1.getTarget().getIndex().equals(players.getLocation()) && !(players.getColour().equals(Colour.Black))) {
                                     detectiveCollision = true;
                                     break;
                                 }
