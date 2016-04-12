@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="lib">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/cw5/lib/sqlite-jdbc-3.8.11.2.jar!/" />
-      <root url="jar://$PROJECT_DIR$/cw5/lib/ant-junit4.jar!/" />
       <root url="jar://$PROJECT_DIR$/cw5/lib/junit-4.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/cw5/lib/ant-junit4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/cw5/lib/sqlite-jdbc-3.8.11.2.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

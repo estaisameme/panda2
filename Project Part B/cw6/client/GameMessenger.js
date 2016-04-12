@@ -59,12 +59,21 @@ GameMessenger.prototype.interpretRegistered = function (messageRegistered) {
 };
 
 /**
- * Updates the UI with the information contianed in the READY message.
+ * Updates the UI with the information contained in the READY message.
  *
  * @param messageReady the READY message.
  */
 GameMessenger.prototype.interpretReady = function (messageReady) {
-  //TODO:
+  //numDetectives = messageReady['n_detectives'];
+  //guiConnector.
+  var rounds = messageReady['rounds'];
+  var currentRound = messageReady['current_round'];
+  guiConnector.setTicketView(rounds,currentRound);
+  var locations = messageReady['locations'];
+  guiConnector.setPlayerLocations(locations);
+  var tickets = messageReady['tickets'];
+  guiConnector.setPlayerTickets(tickets);
+  guiConnector.setSetUpViewVisible(false);
 };
 
 /**
@@ -83,7 +92,31 @@ GameMessenger.prototype.interpretPendingGame = function (messagePendingGame) {
  * @param messageNotify the NOTIFY message.
  */
 GameMessenger.prototype.interpretNotify = function (messageNotify) {
-  //TODO:
+  var move = messageNotify['move'];
+  var move_type = messageNotify['move_type'];
+
+  if(move_type == "MovePass"){}
+  else{
+    if(move_type == "MoveDouble"){
+      guiConnector.removeTicket(move.colour,move.move1.ticket);
+      guiConnector.removeTicket(move.colour,move.move2.ticket);
+      guiConnector.removeTicket(move.colour,"Double");
+      if(move.colour == "Black"){
+          guiConnector.updateTicketView(move.move1.ticket,move.move1.target);
+          guiConnector.updateTicketView(move.move2.ticket,move.move2.target);
+        }
+    }
+    else{
+      guiConnector.animatePlayer(move.colour,move.target);
+      guiConnector.removeTicket(move.colour,move.ticket);
+      if(move.colour == "Black"){
+          guiConnector.updateTicketView(move.ticket,move.target);
+        }
+    }
+  }
+
+
+
 };
 
 /**
@@ -93,7 +126,7 @@ GameMessenger.prototype.interpretNotify = function (messageNotify) {
  * @param messageGameOver the GAME_OVER message.
  */
 GameMessenger.prototype.interpretGameOver = function (messageGameOver) {
-  //TODO:
+  guiConnector.setGameOver(messageGameOver);
 };
 
 /**
@@ -113,6 +146,13 @@ GameMessenger.prototype.interpretGames = function (messageGames) {
  */
 GameMessenger.prototype.interpretConnection = function (messageConnection) {
   //TODO:
+  var self = this;
+  var gameId = guiConnector.getSelectedGame();
+  this.changeConnection("ws://" + messageConnection.host + ":" + messageConnection.port);
+  var notajoinMessage = {};
+              notajoinMessage['type'] = "SPECTATE";
+              notajoinMessage['game_id'] = gameId;
+              this.sendMessage(notajoinMessage);
 };
 
 /**
@@ -122,7 +162,7 @@ GameMessenger.prototype.interpretConnection = function (messageConnection) {
  * @param messageNotifyTurn the NOTIFY_TURN message.
  */
 GameMessenger.prototype.interpretNotifyTurn = function (messageNotifyTurn) {
-  //TODO:
+   guiConnector.startTurn(messageNotifyTurn);
 };
 
 /**
@@ -160,3 +200,12 @@ GameMessenger.prototype.sendJoin = function () {
   };
   this.changeConnection("ws://" + message.host + ":" + message.port, precallback);
 };
+
+/*GameMessenger.prototype.sendSpectate = function (){
+    var self = this;
+    var message = this.storedMessage;
+    var notajoinMessage = {};
+              notajoinMessage['type'] = "SPECTATE";
+              notajoinMessage['game_id'] = message['game_id'];
+              this.sendMessage(notajoinMessage);
+};*/

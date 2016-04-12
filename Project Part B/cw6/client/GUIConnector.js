@@ -149,6 +149,8 @@ GUIConnector.prototype.showStringInSetUpView = function (string) {
 };
 
 GUIConnector.prototype.setSetUpViewVisible = function (show) {
-  if (show) setUpView.show();
+  if (show) {
+   setUpView.show();
+  }
   else setUpView.hide();
 };
