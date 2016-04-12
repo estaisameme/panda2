@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="scotlandyard">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/cw6/lib/scotlandyard.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
