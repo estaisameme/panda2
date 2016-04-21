@@ -172,7 +172,7 @@ public class BoardView extends AnimatablePanel implements MouseListener, MouseMo
         Point p = positions.get(location);
         p = transformPointForMap(p);
 
-        int radius = (int) (50.0 * scaleFactor);;
+        int radius = (int) (50.0 * scaleFactor);
         g.setStroke(new BasicStroke(Math.max((int)(4.0 * (scaleFactor)), 2)));
         g.setColor(new Color(20, 155, 247));
         g.drawOval(p.x - (radius / 2), p.y - (radius / 2), radius, radius);
@@ -181,8 +181,8 @@ public class BoardView extends AnimatablePanel implements MouseListener, MouseMo
     // Transforms a point based on the map scale.
     // @param d the point to be transformed.
     private Point transformPointForMap(Point d) {
-        int xPos = (int) unscalePoint(d.x) - viewPos.x;
-        int yPos = (int) unscalePoint(d.y) - viewPos.y;
+        int xPos = unscalePoint(d.x) - viewPos.x;
+        int yPos = unscalePoint(d.y) - viewPos.y;
         return new Point(xPos, yPos);
     }
 
@@ -243,7 +243,7 @@ public class BoardView extends AnimatablePanel implements MouseListener, MouseMo
             MoveTicket moveTicket = (MoveTicket) move;
             animate(moveTicket);
         } else if (move instanceof MoveDouble) {
-            MoveTicket moveTicket = (MoveTicket) ((MoveDouble) move).move2;
+            MoveTicket moveTicket = ((MoveDouble) move).move2;
             animate(moveTicket);
         }
     }
@@ -515,7 +515,7 @@ public class BoardView extends AnimatablePanel implements MouseListener, MouseMo
         if (singleMoves.size() == 0) {
             for (Move move : validMoves) {
                 if (move instanceof MoveDouble) {
-                    MoveTicket move2 = (MoveTicket) ((MoveDouble) move).move2;
+                    MoveTicket move2 = ((MoveDouble) move).move2;
                     if (move2.target == point) {
                         tickets.add(move2.ticket);
                         tickets.add(Ticket.Double);

@@ -18,11 +18,14 @@ public class RoundsTests {
         }
 
         public void notify(Move move) {
+
+
             if (checkRound) {
                 round = view.getRound();
                 checkRound = false;
             }
             if (move instanceof MoveDouble) checkRound = true;
+
         }
     }
 

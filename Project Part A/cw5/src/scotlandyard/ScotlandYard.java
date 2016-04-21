@@ -1,5 +1,7 @@
 package scotlandyard;
 
+import graph.Edge;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -16,7 +18,11 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected List<Boolean> rounds;
     protected ScotlandYardGraph graph;
     protected List<PlayerData> listOfPlayerData = new ArrayList<PlayerData>();
-
+    protected Colour currentPlayer;
+    protected Integer lastKnownLocOfMrX;
+    protected int roundsMrXPlayed;
+    protected List<Spectator> listOfSpectators = new ArrayList<Spectator>();
+    protected Boolean mrXWins;
     /**
      * Constructs a new ScotlandYard object. This is used to perform all of the game logic.
      *
@@ -33,8 +39,10 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         this.numberOfDetectives = numberOfDetectives;
         this.rounds = rounds;
         this.graph = graph;
+        this.lastKnownLocOfMrX = 0;
+        this.roundsMrXPlayed = 0;
+        this.currentPlayer = Colour.Black;
 
-        //TODO:
     }
 
     /**
@@ -88,13 +96,35 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     private void notifyPlayer(Colour colour, Integer token) {
         //TODO:
+        for(PlayerData player: listOfPlayerData){
+            if(player.getColour().equals((colour))){
+                player.getPlayer().notify(player.getLocation(), validMoves(colour), token, this);
+            }
+        }
     }
 
     /**
      * Passes priority onto the next player whose turn it is to play.
      */
     protected void nextPlayer() {
-        //TODO:
+        Boolean updatePlayer = false;
+
+        for(PlayerData player:listOfPlayerData){
+            if(updatePlayer.equals(true)){
+                currentPlayer = player.getColour();
+                break;
+            }
+            if(player.getColour().equals(currentPlayer)){
+                if(player.getColour().equals(Colour.Black)){
+                    roundsMrXPlayed++;
+
+                }
+                if(listOfPlayerData.indexOf(player) == (listOfPlayerData.size() - 1)){
+                    currentPlayer = Colour.Black;
+                }
+                updatePlayer = true;
+            }
+        }
     }
 
     /**
@@ -103,9 +133,46 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param move the move that is to be played.
      */
     protected void play(Move move) {
-        if (move instanceof MoveTicket) play((MoveTicket) move);
-        else if (move instanceof MoveDouble) play((MoveDouble) move);
-        else if (move instanceof MovePass) play((MovePass) move);
+
+            if (move instanceof MoveTicket){
+                play((MoveTicket) move);
+                updateSpecs(move);
+            }
+            else if (move instanceof MoveDouble){
+                play((MoveDouble) move);
+                //updateSpecs(move);
+            }
+            else if (move instanceof MovePass){
+                play((MovePass) move);
+                updateSpecs(move);
+            }
+
+
+    }
+
+    protected void updateSpecs(Move move){
+        if (move.colour.equals(Colour.Black)) {
+            if (rounds.get(roundsMrXPlayed)) {
+                for (Spectator spectator : listOfSpectators) {
+                    spectator.notify(move);
+                }
+            }else{
+                for (Spectator spectator : listOfSpectators) {
+                    if(move instanceof  MoveDouble){
+                        Move hiddenX = MoveDouble.instance(Colour.Black,MoveTicket.instance(Colour.Black,null,lastKnownLocOfMrX),MoveTicket.instance(Colour.Black,null,lastKnownLocOfMrX));
+                        spectator.notify(hiddenX);
+                    }else{
+                        Move hiddenX = MoveTicket.instance(Colour.Black,null,lastKnownLocOfMrX);
+                        spectator.notify(hiddenX);
+                    }
+
+                }
+            }
+        } else {
+            for (Spectator spectator : listOfSpectators) {
+                spectator.notify(move);
+            }
+        }
     }
 
     /**
@@ -115,6 +182,20 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     protected void play(MoveTicket move) {
         //TODO:
+        if(move.colour.equals(currentPlayer)){
+            PlayerData currentDetective = getActualPlayer(currentPlayer);
+            PlayerData mrX = getActualPlayer(Colour.Black);
+
+            if(move.colour.equals(Colour.Black)){//Mr X
+                mrX.removeTicket(move.ticket);
+                mrX.setLocation(move.target);
+
+            }else{ //Detectives
+                currentDetective.removeTicket(move.ticket);
+                mrX.addTicket(move.ticket);
+                currentDetective.setLocation(move.target);
+            }
+        }
     }
 
     /**
@@ -124,6 +205,35 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     protected void play(MoveDouble move) {
         //TODO:
+       /* play(move.move1);
+        play(move.move2);
+        PlayerData mrX = getActualPlayer(Colour.Black);
+        mrX.removeTicket(Ticket.Double);*/
+        if(move.colour.equals(currentPlayer)){
+            PlayerData currentDetective = getActualPlayer(currentPlayer);
+            PlayerData mrX = getActualPlayer(Colour.Black);
+            if(move.colour.equals(Colour.Black)){//Mr X
+                mrX.removeTicket(move.move1.ticket);
+                mrX.removeTicket(move.move2.ticket);
+                mrX.removeTicket(Ticket.Double);
+                mrX.setLocation(move.move1.target);
+                roundsMrXPlayed++;
+                updateSpecs(move);
+                mrX.setLocation(move.move2.target);
+                updateSpecs(move.move2);
+
+            }
+        }
+    }
+
+
+    public PlayerData getActualPlayer(Colour colour){
+        for(PlayerData player: listOfPlayerData){
+            if(player.getColour().equals(colour)){
+                return player;
+            }
+        }
+        return null;
     }
 
     /**
@@ -132,7 +242,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param move the MovePass to play.
      */
     protected void play(MovePass move) {
-        //TODO:
+
     }
 
     /**
@@ -143,7 +253,9 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     public List<Move> validMoves(Colour player) {
         //TODO:
-        return new ArrayList<Move>();
+        List<Move> listOfMoves = new ArrayList<Move>();
+        graph.generateMoves(graph,getActualPlayer(player),listOfMoves,listOfPlayerData);
+        return listOfMoves;
     }
 
     /**
@@ -154,6 +266,8 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     public void spectate(Spectator spectator) {
         //TODO:
+        listOfSpectators.add(spectator);
+
     }
 
     /**
@@ -185,7 +299,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
         for(PlayerData player: listOfPlayerData){
             ethnicConflict.add(player.getColour());
         }
-        //TODO:
         return ethnicConflict;
     }
 
@@ -197,7 +310,20 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      */
     public Set<Colour> getWinningPlayers() {
         //TODO:
-        return new HashSet<Colour>();
+        HashSet<Colour> winningPlayers = new HashSet<Colour>();
+        if(isGameOver()){
+            if(mrXWins){
+                winningPlayers.add(Colour.Black);
+            }else{
+                for(PlayerData player: listOfPlayerData){
+                    if(!player.getColour().equals(Colour.Black)){
+                        winningPlayers.add(player.getColour());
+                    }
+                }
+            }
+        }
+        return winningPlayers;
+
     }
 
     /**
@@ -210,12 +336,16 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * MrX is revealed in round n when {@code rounds.get(n)} is true.
      */
     public int getPlayerLocation(Colour colour) {
-        for(PlayerData player: listOfPlayerData){
-            if(player.getColour().equals(colour)){
-                return player.getLocation();
+        PlayerData player = getActualPlayer(colour);
+        if(player.getColour().equals(Colour.Black)){
+            if(rounds.get(getRound()).equals(true)){
+                lastKnownLocOfMrX = player.getLocation();
+            }else{
             }
+            return lastKnownLocOfMrX;
+        }else {
+            return player.getLocation();
         }
-        return 0;
     }
 
     /**
@@ -241,6 +371,65 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is over, false otherwise.
      */
     public boolean isGameOver() {
+        if (isReady()) {
+            //MrX caught
+            PlayerData mrX = getActualPlayer(Colour.Black);
+            for (PlayerData player : listOfPlayerData) {
+                if (!(player.getColour().equals(Colour.Black))) {
+                    if (mrX.getLocation().equals(player.getLocation())) {
+                        this.mrXWins = false;
+                        return true;
+                    }
+                }
+            }
+
+            //Only one player in game
+            if (listOfPlayerData.size() == 1) {
+                this.mrXWins = true;
+                return true;
+            }
+
+            //MrX out of moves
+            int numMoves = graph.getEdgesFrom(graph.getNode(mrX.getLocation())).size();
+            for(Edge<Integer, Transport> edge: graph.getEdgesFrom(graph.getNode(mrX.getLocation()))) {
+                for (PlayerData player : listOfPlayerData) {
+                    if (edge.getTarget().getIndex().equals(player.getLocation())) {
+                        numMoves--;
+                    }
+                }
+            }
+            if (numMoves == 0) {
+                mrXWins = false;
+                return true;
+            }
+
+            //Detectives out of moves
+            int numDetectives = listOfPlayerData.size() - 1;
+            for (PlayerData player : listOfPlayerData) {
+                if (!(player.equals(mrX))) {
+                    int numEdges = graph.getEdgesFrom(graph.getNode(player.getLocation())).size();
+                    for(Edge<Integer, Transport> edge: graph.getEdgesFrom(graph.getNode(player.getLocation()))) {
+                        if (player.getTickets().get(Ticket.fromTransport(edge.getData())) < 1) {
+                            numEdges --;
+                        }
+                    }
+                    if (numEdges == 0) {
+                        numDetectives --;
+                    }
+                }
+            }
+            if (numDetectives == 0) {
+                mrXWins = true;
+                return true;
+            }
+
+            //Game is over when number of turns has expired
+            if(getRound() == (rounds.size() - 1) && getCurrentPlayer().equals(Colour.Black)){
+                mrXWins = true;
+                return true;
+            }
+
+        }
         return false;
     }
 
@@ -250,10 +439,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return true when the game is ready to be played, false otherwise.
      */
     public boolean isReady() {
-        if(this.numberOfDetectives.equals(listOfPlayerData.size() - 1)){
-            return true;
-        }
-        return false;
+        return this.numberOfDetectives.equals(listOfPlayerData.size() - 1);
     }
 
     /**
@@ -262,8 +448,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return The colour of the current player.
      */
     public Colour getCurrentPlayer() {
-        //TODO:
-        return Colour.Black;
+        return currentPlayer;
     }
 
     /**
@@ -274,8 +459,8 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @return the number of moves MrX has played.
      */
     public int getRound() {
-        //TODO:
-        return -1;
+
+        return roundsMrXPlayed;
     }
 
     /**

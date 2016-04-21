@@ -143,11 +143,7 @@ public class InputPDA {
      * @return true if the DPDA is in an accept state.
      */
     public boolean isAccepted() {
-        if (currentState == 3 || currentState == 8) {
-            return true;
-        } else {
-            return false;
-        }
+        return currentState == 3 || currentState == 8;
     }
 
     /**

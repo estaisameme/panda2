@@ -20,7 +20,7 @@ public class PlayTests {
 
         for (Colour col : locs1.keySet()) {
             assertEquals("When it is not a players move they should not move",
-                    (int) locs1.get(col), (int) game.getPlayerLocation(col));
+                    (int) locs1.get(col), game.getPlayerLocation(col));
         }
 
         Map<Colour, Integer> locs2 = getCurrentLocations(game, Colour.Blue);
@@ -28,7 +28,7 @@ public class PlayTests {
 
         for (Colour col : locs2.keySet()) {
             assertEquals("When it is not a players move they should not move",
-                    (int) locs2.get(col), (int) game.getPlayerLocation(col));
+                    (int) locs2.get(col), game.getPlayerLocation(col));
         }
 
         Map<Colour, Integer> locs3 = getCurrentLocations(game, Colour.Yellow);
@@ -36,7 +36,7 @@ public class PlayTests {
 
         for (Colour col : locs3.keySet()) {
             assertEquals("When it is not a players move they should not move",
-                    (int) locs3.get(col), (int) game.getPlayerLocation(col));
+                    (int) locs3.get(col), game.getPlayerLocation(col));
         }
     }
 
@@ -99,7 +99,7 @@ public class PlayTests {
 
         for (Ticket ticket : TestHelper.tickets) {
             assertEquals("After playing a pass move, the number of tickets held by the player should " +
-                        "not have changes", (int) initialTickets.get(ticket), (int) game.getPlayerTickets(Colour.Blue, ticket));
+                        "not have changes", (int) initialTickets.get(ticket), game.getPlayerTickets(Colour.Blue, ticket));
         }
     }
 
@@ -244,6 +244,12 @@ public class PlayTests {
         MoveTicket firstLocation = testPlayer.chosen.move1;
         MoveTicket secondLocation = testPlayer.chosen.move2;
 
+        if (firstLocation.ticket == secondLocation.ticket) {
+        assertEquals("After playing a double move, the correct tickets should have been removed " +
+                    "from the player", initialTickets.get(firstLocation.ticket) - 2,
+                    game.getPlayerTickets(Colour.Black, firstLocation.ticket));
+        }
+        else {
         assertEquals("After playing a double move, the correct tickets should have been removed " +
                     "from the player", initialTickets.get(firstLocation.ticket) - 1,
                     game.getPlayerTickets(Colour.Black, firstLocation.ticket));
@@ -251,7 +257,7 @@ public class PlayTests {
         assertEquals("After playing a double move, the correct tickets should have been removed " +
                     "from the player", initialTickets.get(secondLocation.ticket) - 1,
                     game.getPlayerTickets(Colour.Black, secondLocation.ticket));
-
+        }
         assertEquals("After playing a double move, the correct tickets should have been removed " +
                     "from the player", initialTickets.get(Ticket.Double) - 1,
                     game.getPlayerTickets(Colour.Black, Ticket.Double));
