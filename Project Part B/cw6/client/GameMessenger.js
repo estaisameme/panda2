@@ -47,6 +47,7 @@ GameMessenger.prototype.handleMessage = function (message) {
   }
 };
 
+
 /**
  * Shows the view containing the game id.
  *
@@ -74,8 +75,16 @@ GameMessenger.prototype.interpretReady = function (messageReady) {
   var tickets = messageReady['tickets'];
   guiConnector.setPlayerTickets(tickets);
   guiConnector.setSetUpViewVisible(false);
+  this.sendMessageToAI(messageReady);
+
 };
 
+
+GameMessenger.prototype.sendMessageToAI = function (message) {
+    if(AIPlayers.length > 0 && aiMessenger.isConnected()){
+        aiMessenger.sendMessage(message);
+    }
+};
 /**
  * Shows the pending game view (Where you wait until your oppenent joins).
  *
@@ -113,12 +122,17 @@ GameMessenger.prototype.interpretNotify = function (messageNotify) {
           guiConnector.updateTicketView(move.ticket,move.target);
         }
     }
+
+    this.sendMessageToAI(messageNotify);
   }
 
 
 
 };
 
+function isInArray(value, array) {
+  return array.indexOf(value) > -1;
+}
 /**
  * Shows the SetUpView again and sets up for a new game.
  * If there are some AI players, it notifies the AI of the game over.
@@ -127,6 +141,9 @@ GameMessenger.prototype.interpretNotify = function (messageNotify) {
  */
 GameMessenger.prototype.interpretGameOver = function (messageGameOver) {
   guiConnector.setGameOver(messageGameOver);
+  this.sendMessageToAI(messageGameOver);
+
+
 };
 
 /**
@@ -145,7 +162,6 @@ GameMessenger.prototype.interpretGames = function (messageGames) {
  * @param messageConnection the CONNECTION message.
  */
 GameMessenger.prototype.interpretConnection = function (messageConnection) {
-  //TODO:
   var self = this;
   var gameId = guiConnector.getSelectedGame();
   this.changeConnection("ws://" + messageConnection.host + ":" + messageConnection.port);
@@ -155,6 +171,7 @@ GameMessenger.prototype.interpretConnection = function (messageConnection) {
               this.sendMessage(notajoinMessage);
 };
 
+
 /**
  * Sends the notify turn message to the AI server if the current player is an AI player.
  * Updates the views accordingly.
@@ -162,7 +179,17 @@ GameMessenger.prototype.interpretConnection = function (messageConnection) {
  * @param messageNotifyTurn the NOTIFY_TURN message.
  */
 GameMessenger.prototype.interpretNotifyTurn = function (messageNotifyTurn) {
-   guiConnector.startTurn(messageNotifyTurn);
+    var validmoves = messageNotifyTurn['valid_moves'];
+    var indexZeroMove = validmoves[0];
+    var submove = indexZeroMove['move'];
+    var cplayer = submove['colour'];
+  if(isInArray(cplayer,AIPlayers)){
+    guiConnector.startTurn(messageNotifyTurn,true);
+    this.sendMessageToAI(messageNotifyTurn);
+
+  }else{
+    guiConnector.startTurn(messageNotifyTurn,false);
+  }
 };
 
 /**
@@ -201,11 +228,3 @@ GameMessenger.prototype.sendJoin = function () {
   this.changeConnection("ws://" + message.host + ":" + message.port, precallback);
 };
 
-/*GameMessenger.prototype.sendSpectate = function (){
-    var self = this;
-    var message = this.storedMessage;
-    var notajoinMessage = {};
-              notajoinMessage['type'] = "SPECTATE";
-              notajoinMessage['game_id'] = message['game_id'];
-              this.sendMessage(notajoinMessage);
-};*/

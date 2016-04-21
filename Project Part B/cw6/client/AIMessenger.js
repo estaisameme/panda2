@@ -49,3 +49,4 @@ AIMessenger.prototype.interpretJoin = function (messageJoin) {
 AIMessenger.prototype.interpretMove = function (messageMove) {
   gameMessenger.sendMessage(messageMove);
 };
+

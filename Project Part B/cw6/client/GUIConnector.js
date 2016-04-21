@@ -148,6 +148,7 @@ GUIConnector.prototype.showStringInSetUpView = function (string) {
   setUpView.showWaitingString(string);
 };
 
+
 GUIConnector.prototype.setSetUpViewVisible = function (show) {
   if (show) {
    setUpView.show();
