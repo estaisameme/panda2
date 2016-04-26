@@ -22,8 +22,8 @@ public class RandomPlayer implements Player {
     public void notify(int location, List<Move> moves, Integer token, Receiver receiver) {
         //TODO: Some clever AI here ...
         System.out.println("Getting random move");
-        // Collections.shuffle(moves);
-        // System.out.println("Moves: " + moves);
+        Collections.shuffle(moves);
+        System.out.println("Moves: " + moves);
         System.out.println("Playing random move: " + moves.get(0));
         receiver.playMove(moves.get(0), token);
     }
