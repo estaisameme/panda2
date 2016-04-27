@@ -13,18 +13,35 @@ import java.util.*;
  * which must be one from the list.
  */
 public class RandomPlayer implements Player {
+    ScotlandYardView view;
 
-    public RandomPlayer(ScotlandYardView view, String graphFilename) {
+    public RandomPlayer(ScotlandYardView sView, String graphFilename) {
         //TODO: A better AI makes use of `view` and `graphFilename`.
+        view = sView;
+    }
+
+    public int fetchTarget(int location, Move move) {
+       try {
+           return ((MoveDouble)move).move2.target;
+       }
+       catch (Exception e) {
+       }
+        try {
+            return ((MoveTicket)move).target;
+        }
+        catch (Exception e) {
+        }
+        return location;
     }
 
     @Override
     public void notify(int location, List<Move> moves, Integer token, Receiver receiver) {
         //TODO: Some clever AI here ...
-        System.out.println("Getting random move");
+        //System.out.println("Getting random move");
         Collections.shuffle(moves);
-        System.out.println("Moves: " + moves);
-        System.out.println("Playing random move: " + moves.get(0));
+        //System.out.println("Moves: " + moves);
+        System.out.println("RANDOMOVE "+moves.get(0)+" TARGET: "+fetchTarget(location, moves.get(0)));
+
         receiver.playMove(moves.get(0), token);
     }
 }
