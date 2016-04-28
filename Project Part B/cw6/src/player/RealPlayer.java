@@ -98,15 +98,43 @@ public class RealPlayer implements Player{
 
     public void makeGameTree(List<Move> moves,int location){
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("gameTree");
-        DefaultMutableTreeNode current_parent;
-        current_parent = root;
-        for(int i = 0;i < 2;i++){
-            for(Move move: moves){
-                Double weight = xScore(move, location);
-                makeNode(weight,move,current_parent);
+        if(view.getCurrentPlayer().equals(Colour.Black)){
+            recursiveGameTree(location,root,0,true);
+        }else{
+            recursiveGameTree(location,root,0,false);
+        }
+    }
+
+    public void recursiveGameTree(int location,DefaultMutableTreeNode parent,int depth,Boolean black){
+        if(depth == 3){
+            if(black){
+                List<Move> moves = graph.generateMoves(Colour.Black,location);
+                for(Move move: moves){
+                    Double weight = xScore(move, location);
+                    makeNode(weight,move,parent);
+                }
+            }else{
+                List<Move> moves = graph.generateMoves(view.getCurrentPlayer(),location);
+                for(Move move: moves){
+                    Double weight = dScore(move, location);
+                    makeNode(weight,move,parent);
+                }
+            }
+        }else{
+            if(black){
+                List<Move> moves = graph.generateMoves(Colour.Black,location);
+                for(Move move: moves){
+                    Double weight = xScore(move, location);
+                    recursiveGameTree(fetchTarget(location,move), makeNode(weight,move,parent),depth + 1,true);
+                }
+            }else{
+                List<Move> moves = graph.generateMoves(view.getCurrentPlayer(),location);
+                for(Move move: moves){
+                    Double weight = dScore(move, location);
+                    recursiveGameTree(fetchTarget(location,move), makeNode(weight,move,parent),depth + 1,false);
+                }
             }
         }
-
     }
 
     private DefaultMutableTreeNode makeNode(Double weight, Move move, DefaultMutableTreeNode parent)
