@@ -14,14 +14,19 @@ public class RealPlayer implements Player{
     Dijkstra dijkstra;
     ScotlandYardView view;
     ScotlandYardGraph graph;
+    Map <Transport, Integer> mrXTickets;
 
-    public RealPlayer(ScotlandYardView sView, String graphFileName) throws IOException {
+    public RealPlayer(ScotlandYardView sView, String graphFileName) {
         //TODO: A better AI makes use of `view` and `graphFilename`.
         dijkstra = new Dijkstra(graphFileName);
         view = sView;
         ScotlandYardGraphReader graphReader = new ScotlandYardGraphReader();
-        graph = graphReader.readGraph(graphFileName);
+        try{
+            graph = graphReader.readGraph(graphFileName);
+        }
+        catch (Exception e) {
 
+        }
     }
 
     public int fetchTarget(int location, Move move) {
@@ -50,7 +55,6 @@ public class RealPlayer implements Player{
 
                 for (Transport transport : Transport.values()) {
                     ticketMap.put(transport, view.getPlayerTickets(player, Ticket.fromTransport(transport)));
-                    //weight = weight + dijkstra.getRoute(view.getPlayerLocation(player), fetchTarget(location, move), ticketMap).size();
                 }
                 currentDistance = dijkstra.getRoute(view.getPlayerLocation(player), location, ticketMap).size();
                 newDistance = dijkstra.getRoute(view.getPlayerLocation(player), fetchTarget(location, move), ticketMap).size();
@@ -68,7 +72,6 @@ public class RealPlayer implements Player{
         return weight;
     }
 
-
     @Override
     public void notify(int location, List<Move> moves, Integer token, Receiver receiver) {
         //TODO: Some clever AI here ...
@@ -83,6 +86,10 @@ public class RealPlayer implements Player{
                 bestMoveScore = newScore;
             }
         }
+        for (Transport transport:Transport.values()) {
+            System.out.println("AYY LMAO" +view.getPlayerTickets(Colour.Black, Ticket.fromTransport(transport)));
+        }
+
         System.out.println("[CHOSENMOVE]: "+bestMove+" [WEIGHT}: "+ bestMoveScore);
         receiver.playMove(bestMove, token);
     }
