@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.*;
 import graph.Edge;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 /**
  * Created by User on 21/04/2016.
  */
@@ -14,7 +16,7 @@ public class RealPlayer implements Player{
     Dijkstra dijkstra;
     ScotlandYardView view;
     ScotlandYardGraph graph;
-    Map <Transport, Integer> mrXTickets;
+    Map<Double,Move> weightedMove;
 
     public RealPlayer(ScotlandYardView sView, String graphFileName) {
         //TODO: A better AI makes use of `view` and `graphFilename`.
@@ -72,6 +74,50 @@ public class RealPlayer implements Player{
         return weight;
     }
 
+    public double dScore(Move move, int location) {
+        Map <Transport, Integer> ticketMap = new HashMap<Transport, Integer>();
+        double weight = 0;
+        double currentDistance;
+        double newDistance;
+        int numEdges = 0;
+        for (Transport transport : Transport.values()) {
+            ticketMap.put(transport, view.getPlayerTickets(view.getCurrentPlayer(), Ticket.fromTransport(transport)));
+        }
+        if (view.getPlayerLocation(Colour.Black) != 0) {
+            System.out.println("HERE WE GO " + view.getPlayerLocation(Colour.Black));
+            currentDistance = dijkstra.getRoute(view.getPlayerLocation(Colour.Black), location, ticketMap).size();
+            newDistance = dijkstra.getRoute(view.getPlayerLocation(Colour.Black), fetchTarget(location, move), ticketMap).size();
+            weight = weight - (((newDistance - currentDistance) / newDistance) * 10.0);
+        }
+        numEdges = graph.getEdgesFrom(graph.getNode(fetchTarget(location, move))).size();
+        weight = weight + numEdges;
+        System.out.println("[MOVE]:"+ move + " [WEIGHT]: "+weight);
+
+        return weight;
+    }
+
+    public void makeGameTree(List<Move> moves,int location){
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("gameTree");
+        DefaultMutableTreeNode current_parent;
+        current_parent = root;
+        for(int i = 0;i < 2;i++){
+            for(Move move: moves){
+                Double weight = xScore(move, location);
+                makeNode(weight,move,current_parent);
+            }
+        }
+
+    }
+
+    private DefaultMutableTreeNode makeNode(Double weight, Move move, DefaultMutableTreeNode parent)
+    {
+        weightedMove.put(weight,move);
+        DefaultMutableTreeNode new_node;
+        new_node = new DefaultMutableTreeNode(weightedMove);
+        parent.add(new_node);
+        return new_node;
+    }
+
     @Override
     public void notify(int location, List<Move> moves, Integer token, Receiver receiver) {
         //TODO: Some clever AI here ...
@@ -80,7 +126,12 @@ public class RealPlayer implements Player{
         double newScore;
         //System.out.println("Playing random move: " + moves.get(0));
         for (Move move:moves) {
-            newScore = xScore(move, location);
+            if (view.getCurrentPlayer() == Colour.Black) {
+                newScore = xScore(move, location);
+            }
+            else {
+                newScore = dScore(move, location);
+            }
             if (newScore > bestMoveScore) {
                 bestMove = move;
                 bestMoveScore = newScore;
@@ -89,6 +140,7 @@ public class RealPlayer implements Player{
         for (Transport transport:Transport.values()) {
             System.out.println("AYY LMAO" +view.getPlayerTickets(Colour.Black, Ticket.fromTransport(transport)));
         }
+
 
         System.out.println("[CHOSENMOVE]: "+bestMove+" [WEIGHT}: "+ bestMoveScore);
         receiver.playMove(bestMove, token);

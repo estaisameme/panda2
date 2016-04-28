@@ -32,21 +32,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ScotlandYard.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ScotlandYard.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cw5/src/scotlandyard/ScotlandYard.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.6285715">
+            <state vertical-scroll-proportion="0.33246073">
               <caret line="458" column="33" selection-start-line="458" selection-start-column="29" selection-end-line="458" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ScotlandYardGraph.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/cw5/src/scotlandyard/ScotlandYardGraph.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.1">
-              <caret line="43" column="73" selection-start-line="43" selection-start-column="73" selection-end-line="43" selection-end-column="73" />
               <folding />
             </state>
           </provider>
@@ -267,7 +257,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="121" y="47" width="1580" height="1000" extended-state="0" />
+    <frame x="121" y="47" width="1580" height="1000" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -309,18 +299,18 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cw5/src/scotlandyard/ScotlandYard.java">
+    <entry file="file://$PROJECT_DIR$/cw5/src/scotlandyard/ScotlandYardGraph.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.6285715">
-          <caret line="458" column="33" selection-start-line="458" selection-start-column="29" selection-end-line="458" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.55">
+          <caret line="23" column="26" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cw5/src/scotlandyard/ScotlandYardGraph.java">
+    <entry file="file://$PROJECT_DIR$/cw5/src/scotlandyard/ScotlandYard.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.1">
-          <caret line="43" column="73" selection-start-line="43" selection-start-column="73" selection-end-line="43" selection-end-column="73" />
+        <state vertical-scroll-proportion="0.33246073">
+          <caret line="458" column="33" selection-start-line="458" selection-start-column="29" selection-end-line="458" selection-end-column="33" />
           <folding />
         </state>
       </provider>
