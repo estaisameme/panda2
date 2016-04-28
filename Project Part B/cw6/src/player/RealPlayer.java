@@ -16,8 +16,8 @@ public class RealPlayer implements Player{
     Dijkstra dijkstra;
     ScotlandYardView view;
     ScotlandYardGraph graph;
-    Map<Double,Move> weightedMove;
-    Map<Double,Move> newUserObject;
+    HashMap<Double,Move> weightedMove =  new HashMap<Double,Move>();
+    HashMap<Double,Move> newUserObject = new HashMap<Double,Move>();
     Move verytemporaryMove;
 
     public RealPlayer(ScotlandYardView sView, String graphFileName) {
@@ -108,9 +108,10 @@ public class RealPlayer implements Player{
         return root;
     }
 
-    public void recursiveGameTree(int dlocation,int xlocation,DefaultMutableTreeNode parent,int depth,Boolean black){
-        Double weight = (double)0;
+    public void recursiveGameTree(int xlocation,int dlocation,DefaultMutableTreeNode parent,int depth,Boolean black){
+        Double weight = (double) 0;
         if(depth == 2){
+            System.out.println("we've hit the bottom");
             if(black){
                 List<Move> moves = graph.generateMoves(Colour.Black,xlocation);
                 for(Move move: moves){
@@ -124,6 +125,39 @@ public class RealPlayer implements Player{
                     makeNode(weight,move,parent);
                 }
             }
+            if(depth % 2 == 0) {
+                Double temp = (double) 0, max = (double) 0;
+                System.out.println("we've entered the loop");
+                for (int i = parent.getChildCount(); i > 0; i--) {
+                    DefaultMutableTreeNode child = parent.getNextNode();
+                    HashMap<Double, Move> tempmap = (HashMap<Double, Move>) child.getUserObject();
+                    Iterator iter = tempmap.keySet().iterator();
+                    while (iter.hasNext()) {
+                        temp = (double) iter.next();
+                    }
+                    if (temp > max) {
+                        max = temp;
+                        verytemporaryMove = tempmap.get(max);
+                    }
+
+                }
+                newUserObject.clear();
+                if (depth == 0) {
+                    System.out.println("please boss");
+                    newUserObject.put(max, verytemporaryMove);
+                } else {
+                    HashMap<Double, Move> tempmap = (HashMap<Double, Move>) parent.getUserObject();
+                    Iterator iter = tempmap.values().iterator();
+                    while (iter.hasNext()) {
+                        Move temporaryMove = (Move) iter.next();
+                        newUserObject.put(max, temporaryMove);
+                    }
+                }
+
+
+                parent.setUserObject(newUserObject);
+                parent.removeAllChildren();
+            }
         }else{
             if(black){
                 if(depth % 2 == 0){
@@ -133,12 +167,41 @@ public class RealPlayer implements Player{
                 }
                 List<Move> moves = graph.generateMoves(Colour.Black,xlocation);
                 for(Move move: moves){
-                    recursiveGameTree(xlocation,fetchTarget(dlocation,move), makeNode(weight,move,parent),depth + 1,true);
+                    recursiveGameTree(fetchTarget(xlocation,move),dlocation, makeNode(weight,move,parent),depth + 1,false);
                 }
-                if(depth % 2 == 0){
-                    weight =  (double) -999;
-                }else{
-                    weight = (double) 999;
+                System.out.println("Done recurring");
+                if(depth % 2 == 0) {
+                    Double temp = (double) 0, min = (double) 0;
+
+                    for (int i = parent.getChildCount(); i > 0; i--) {
+                        DefaultMutableTreeNode child = parent.getNextNode();
+                        HashMap<Double, Move> tempmap = (HashMap<Double, Move>) child.getUserObject();
+                        Iterator iter = tempmap.keySet().iterator();
+                        while (iter.hasNext()) {
+                            temp = (double) iter.next();
+                        }
+                        if (temp < min) {
+                            min = temp;
+                            verytemporaryMove = tempmap.get(min);
+                        }
+
+                    }
+                    newUserObject.clear();
+                    if (depth == 0) {
+                        System.out.println("please boss");
+                        newUserObject.put(min, verytemporaryMove);
+                    } else {
+                        HashMap<Double, Move> tempmap = (HashMap<Double, Move>) parent.getUserObject();
+                        Iterator iter = tempmap.values().iterator();
+                        while (iter.hasNext()) {
+                            Move temporaryMove = (Move) iter.next();
+                            newUserObject.put(min, temporaryMove);
+                        }
+                    }
+
+
+                    parent.setUserObject(newUserObject);
+                    parent.removeAllChildren();
                 }
 
             }else{
@@ -149,14 +212,14 @@ public class RealPlayer implements Player{
                 }
                 List<Move> moves = graph.generateMoves(view.getCurrentPlayer(),dlocation);
                 for(Move move: moves){
-                    recursiveGameTree(fetchTarget(xlocation,move),dlocation, makeNode(weight,move,parent),depth + 1,false);
+                    recursiveGameTree(xlocation,fetchTarget(dlocation,move), makeNode(weight,move,parent),depth + 1,true);
                 }
                 if(depth % 2 == 0){
                     Double temp = (double) 0,min = (double) 0;
 
                     for(int i = parent.getChildCount();i > 0;i--){
                         DefaultMutableTreeNode child = parent.getNextNode();
-                        Map<Double,Move> tempmap = (Map<Double,Move>) child.getUserObject();
+                        HashMap<Double,Move> tempmap = (HashMap<Double,Move>) child.getUserObject();
                         Iterator iter = tempmap.keySet().iterator();
                         while (iter.hasNext()) {
                              temp = (double) iter.next();
@@ -171,7 +234,7 @@ public class RealPlayer implements Player{
                     if(depth == 0){
                         newUserObject.put(min,verytemporaryMove);
                     }else{
-                        Map<Double,Move> tempmap = (Map<Double,Move>) parent.getUserObject();
+                        HashMap<Double,Move> tempmap = (HashMap<Double,Move>) parent.getUserObject();
                         Iterator iter = tempmap.values().iterator();
                         while (iter.hasNext()) {
                             Move temporaryMove = (Move) iter.next();
@@ -181,26 +244,29 @@ public class RealPlayer implements Player{
 
 
                     parent.setUserObject(newUserObject);
+                    parent.removeAllChildren();
 
                 }else{
                     Double temp = (double) 0,max = (double) 0;
                     for(int i = parent.getChildCount();i > 0;i--){
                         DefaultMutableTreeNode child = parent.getNextNode();
-                        Map<Double,Move> tempmap = (Map<Double,Move>) child.getUserObject();
+                        HashMap<Double,Move> tempmap = (HashMap<Double,Move>) child.getUserObject();
                         Iterator iter = tempmap.keySet().iterator();
                         while (iter.hasNext()) {
                             temp = (double) iter.next();
                         }
                         if(temp > max){
                             max = temp;
+                            verytemporaryMove = tempmap.get(max);
                         }
 
                     }
                     newUserObject.clear();
                     if(depth == 0){
+                        System.out.println("Please boss");
                         newUserObject.put(max,verytemporaryMove);
                     }else{
-                        Map<Double,Move> tempmap = (Map<Double,Move>) parent.getUserObject();
+                        HashMap<Double,Move> tempmap = (HashMap<Double,Move>) parent.getUserObject();
                         Iterator iter = tempmap.values().iterator();
                         while (iter.hasNext()) {
                             Move temporaryMove = (Move) iter.next();
@@ -209,6 +275,7 @@ public class RealPlayer implements Player{
                     }
 
                     parent.setUserObject(newUserObject);
+                    parent.removeAllChildren();
                 }
             }
         }
@@ -242,17 +309,32 @@ public class RealPlayer implements Player{
                 System.out.println("AYY LMAO" +view.getPlayerTickets(Colour.Black, Ticket.fromTransport(transport)));
             }
         }else{
-            newUserObject.clear();
-            newUserObject = (Map<Double,Move>) makeGameTree(view.getPlayerLocation(Colour.Black),view.getPlayerLocation(view.getCurrentPlayer())).getUserObject();
-            Iterator iter = newUserObject.values().iterator();
-            while (iter.hasNext()) {
-               bestMove = (Move) iter.next();
+            //newUserObject.clear();
+            if(view.getRound() > 2){
+                newUserObject = (HashMap<Double,Move>) makeGameTree(view.getPlayerLocation(Colour.Black),view.getPlayerLocation(view.getCurrentPlayer())).getUserObject();
+                System.out.println(view.getPlayerLocation(view.getCurrentPlayer()));
+                Iterator iter = newUserObject.values().iterator();
+                while (iter.hasNext()) {
+                    bestMove = (Move) iter.next();
 
+                }
+                Iterator iter1 = newUserObject.keySet().iterator();
+                while (iter1.hasNext()) {
+                    bestMoveScore = (double) iter1.next();
+                }
+            }else{
+                for (Move move:moves) {
+                    newScore = dScore(move,0,location);
+                    if (newScore > bestMoveScore) {
+                        bestMove = move;
+                        bestMoveScore = newScore;
+                    }
+                }
+                for (Transport transport:Transport.values()) {
+                    System.out.println("AYY LMAO" +view.getPlayerTickets(Colour.Black, Ticket.fromTransport(transport)));
+                }
             }
-            Iterator iter1 = newUserObject.keySet().iterator();
-            while (iter.hasNext()) {
-                bestMoveScore = (double) iter.next();
-            }
+
 
         }
 
