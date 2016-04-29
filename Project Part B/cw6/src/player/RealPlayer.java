@@ -81,7 +81,7 @@ public class RealPlayer implements Player{
         double weight = 0;
         double currentDistance;
         double newDistance;
-        int numEdges = 0;
+        //int numEdges = 0;
         for (Transport transport : Transport.values()) {
             ticketMap.put(transport, view.getPlayerTickets(view.getCurrentPlayer(), Ticket.fromTransport(transport)));
         }
@@ -90,14 +90,14 @@ public class RealPlayer implements Player{
             newDistance = dijkstra.getRoute(xlocation, fetchTarget(dlocation, move), ticketMap).size();
             weight = weight + (currentDistance-newDistance);
         }
-        numEdges = graph.getEdgesFrom(graph.getNode(fetchTarget(dlocation, move))).size();
+        //numEdges = graph.getEdgesFrom(graph.getNode(fetchTarget(dlocation, move))).size();
         //weight = weight + numEdges;
         //System.out.println("[MOVE]:"+ move + " [WEIGHT]: "+weight);
 
         return weight;
     }
 
-    public DefaultMutableTreeNode makeGameTree(int xlocation,int dlocation){
+    /*public DefaultMutableTreeNode makeGameTree(int xlocation,int dlocation){
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("gameTree");
         if(view.getCurrentPlayer().equals(Colour.Black)){
             recursiveGameTree(xlocation,7,root,0,true);
@@ -287,11 +287,11 @@ public class RealPlayer implements Player{
         new_node = new DefaultMutableTreeNode(weightedMove);
         parent.add(new_node);
         return new_node;
-    }
+    }*/
 
     public Node testTree(List<Move> moves, int depth, int location, int opLocation, Move value) {
         Node bigNode = new Node(new WeightedMove(value, 999));
-        if (depth < 1) {
+        if (depth < 2) {
             if (depth % 2 == 0) {
                 for (Move move : moves) {
                     bigNode.fetchValue().changeWeight(-999);
