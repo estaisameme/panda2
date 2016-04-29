@@ -28,7 +28,6 @@ public class RealPlayerFactory implements PlayerFactory {
     @Override
     public List<Spectator> getSpectators(ScotlandYardView view) {
         List<Spectator> spectators = new ArrayList<Spectator>();
-        //TODO: Add your AI here if you want it to be a spectator.
         return spectators;
     }
 
