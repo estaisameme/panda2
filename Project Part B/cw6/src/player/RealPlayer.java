@@ -85,7 +85,7 @@ public class RealPlayer implements Player{
             currentDistance = dijkstra.getRoute(dStartingLoc, xStartingLoc, ticketMap).size();
             newDistance = dijkstra.getRoute(fetchTarget(dlocation, move), xlocation, ticketMap).size();
             weight = (currentDistance - newDistance)*10;
-            System.out.println("BIG WEIGHT=     "+weight);
+          //  System.out.println("BIG WEIGHT=     "+weight);
         }
         numEdges = graph.getEdgesFrom(graph.getNode(fetchTarget(dlocation, move))).size();
         //weight = weight + numEdges;
@@ -93,33 +93,42 @@ public class RealPlayer implements Player{
         return weight;
     }
 
-    public Node testTree(List<Move> moves, int depth, int location, int opLocation, Move value, Colour opponent,int dStartingLoc,int xStartingLoc) {
+    public Node testTree(List<Move> moves, int depth, int location, int opLocation, Move value, Colour opponent,int dStartingLoc,int xStartingLoc,double alpha, double beta) {
         Node bigNode = new Node(new WeightedMove(value, -999));
         double bestWeight = -999;
         double weight = 0;
         if (depth < 2) {
             if (depth % 2 == 0) {
-                bigNode.fetchValue().changeWeight(-999);
+                bigNode.fetchValue().changeWeight(alpha);
                 for (Move move : moves) {
                     bigNode.addChild(testTree(graph.generateMoves(opponent, opLocation), depth + 1, fetchTarget(location, move),
-                            opLocation, move, opponent,dStartingLoc,xStartingLoc));
+                            opLocation, move, opponent,dStartingLoc,xStartingLoc,bigNode.fetchValue().fetchWeight(),beta));
 
                 }
                 for (Node node:bigNode.fetchChildren()) {
                     if (node.fetchValue().fetchWeight() > bigNode.fetchValue().fetchWeight()) {
                         bigNode.fetchValue().changeWeight(node.fetchValue().fetchWeight());
+                        if(depth == 0){
+                            bigNode.fetchValue().changeMove(node.fetchValue().fetchMove());
+                        }
+                    }
+                    if(beta <= bigNode.fetchValue().fetchWeight()){
+                        break;
                     }
                 }
             }
             else {
-                bigNode.fetchValue().changeWeight(999);
+                bigNode.fetchValue().changeWeight(beta);
                 for (Move move : moves) {
                     bigNode.addChild(testTree(graph.generateMoves(view.getCurrentPlayer(), location), depth+1, location,
-                            fetchTarget(opLocation, move), move, opponent,dStartingLoc,xStartingLoc));
+                            fetchTarget(opLocation, move), move, opponent,dStartingLoc,xStartingLoc,alpha,bigNode.fetchValue().fetchWeight()));
                 }
                 for (Node node:bigNode.fetchChildren()) {
                     if (node.fetchValue().fetchWeight() < bigNode.fetchValue().fetchWeight()) {
                         bigNode.fetchValue().changeWeight(node.fetchValue().fetchWeight());
+                    }
+                    if (bigNode.fetchValue().fetchWeight() <= alpha){
+                        break;
                     }
                 }
             }
@@ -137,6 +146,9 @@ public class RealPlayer implements Player{
                 }
                 bigNode.addChild(n);
                 if (weight > bestWeight) bestWeight = weight;
+                if(beta <= bestWeight){
+                    break;
+                }
             }
             bigNode.fetchValue().changeWeight(bestWeight);
         }
@@ -158,7 +170,7 @@ public class RealPlayer implements Player{
                 }
                 newDistance = dijkstra.getRoute(view.getPlayerLocation(player), location,
                         ticketMap).size();
-                System.out.println("@@@@@@@@@@@@    distance: "+newDistance);
+               // System.out.println("@@@@@@@@@@@@    distance: "+newDistance);
                 if (newDistance < closestDetectiveDistance) {
                     closestDetective = player;
                     closestDetectiveDistance = newDistance;
@@ -177,7 +189,7 @@ public class RealPlayer implements Player{
 
         //System.out.println("Playing random move: " + moves.get(0));
         if(view.getCurrentPlayer().equals((Colour.Black))){
-            Node root = testTree(moves, 0, location, view.getPlayerLocation(getClosestDetective(location)), moves.get(0), getClosestDetective(location), view.getPlayerLocation(getClosestDetective(location)),location);
+            Node root = testTree(moves, 0, location, view.getPlayerLocation(getClosestDetective(location)), moves.get(0), getClosestDetective(location), view.getPlayerLocation(getClosestDetective(location)),location,(double) -999,(double) 999);
             for (Node node:root.fetchChildren()) {
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 System.out.println(node.fetchValue().fetchMove()+ "     "+ node.fetchValue().fetchWeight());
@@ -188,15 +200,18 @@ public class RealPlayer implements Player{
             }
         }else{
             if(view.getPlayerLocation(Colour.Black) != 0){
-                Node root = testTree(moves, 0, location, view.getPlayerLocation(Colour.Black), moves.get(0), Colour.Black,location,view.getPlayerLocation(Colour.Black));
-                for (Node node:root.fetchChildren()) {
+                Node root = testTree(moves, 0, location, view.getPlayerLocation(Colour.Black), moves.get(0), Colour.Black,location,view.getPlayerLocation(Colour.Black),-999,999);
+                /*for (Node node:root.fetchChildren()) {
                     System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                     System.out.println(node.fetchValue().fetchMove()+ "     "+ node.fetchValue().fetchWeight());
                     if (node.fetchValue().fetchWeight() > bestMoveScore) {
-                        bestMove = node.fetchValue().fetchMove();
-                        bestMoveScore = node.fetchValue().fetchWeight();
+                       // bestMove = node.fetchValue().fetchMove();
+                      //  bestMoveScore = node.fetchValue().fetchWeight();
                     }
                 }
+                System.out.println("old method:-" + bestMoveScore);*/
+                bestMove = root.fetchValue().fetchMove();
+                bestMoveScore = root.fetchValue().fetchWeight();
             }else{
                 for (Move move:moves) {
                     newScore = dScore(move,view.getPlayerLocation(Colour.Black),location,location,view.getPlayerLocation(Colour.Black));
