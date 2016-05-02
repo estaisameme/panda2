@@ -66,7 +66,7 @@ public class RealPlayer implements Player{
         numEdges = graph.getEdgesFrom(graph.getNode(fetchTarget(xLocation, move))).size();
         //weight = weight + numEdges;
 
-        System.out.println("[MOVE]:"+ move + " [WEIGHT]: "+weight);
+        //System.out.println("[MOVE]:"+ move + " [WEIGHT]: "+weight);
         Random random = new Random();
         return weight;
     }
@@ -96,7 +96,7 @@ public class RealPlayer implements Player{
         Node bigNode = new Node(new WeightedMove(value, -999));
         double bestWeight = -999;
         double weight = 0;
-        if (depth < 2) {
+        if (depth < 0) {
             if (depth % 2 == 0) {
                 bigNode.fetchValue().changeWeight(alpha);
                 for (Move move : moves) {
