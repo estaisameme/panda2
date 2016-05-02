@@ -17,7 +17,7 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
     protected Integer numberOfDetectives;
     protected List<Boolean> rounds;
     protected ScotlandYardGraph graph;
-    protected List<PlayerData> listOfPlayerData = new ArrayList<PlayerData>();
+    protected List<PlayerData> listOfPlayerData = new ArrayList<PlayerData>(); //This list is used to manipulate all the data we require about the players.
     protected Colour currentPlayer;
     protected Integer lastKnownLocOfMrX;
     protected int roundsMrXPlayed;

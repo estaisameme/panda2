@@ -5,6 +5,7 @@ import scotlandyard.Move;
 /**
  * Created by William on 28/04/2016.
  */
+//This is the weighted move class, the object used to create the gametree
 public class WeightedMove {
     private Move move;
     private double weight;
