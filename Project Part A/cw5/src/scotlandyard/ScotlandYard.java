@@ -95,7 +95,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param token the secret token for the move.
      */
     private void notifyPlayer(Colour colour, Integer token) {
-        //TODO:
         for(PlayerData player: listOfPlayerData){
             if(player.getColour().equals((colour))){
                 player.getPlayer().notify(player.getLocation(), validMoves(colour), token, this);
@@ -181,7 +180,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param move the MoveTicket to play.
      */
     protected void play(MoveTicket move) {
-        //TODO:
         if(move.colour.equals(currentPlayer)){
             PlayerData currentDetective = getActualPlayer(currentPlayer);
             PlayerData mrX = getActualPlayer(Colour.Black);
@@ -204,11 +202,6 @@ public class ScotlandYard implements ScotlandYardView, Receiver {
      * @param move the MoveDouble to play.
      */
     protected void play(MoveDouble move) {
-        //TODO:
-       /* play(move.move1);
-        play(move.move2);
-        PlayerData mrX = getActualPlayer(Colour.Black);
-        mrX.removeTicket(Ticket.Double);*/
         if(move.colour.equals(currentPlayer)){
             PlayerData currentDetective = getActualPlayer(currentPlayer);
             PlayerData mrX = getActualPlayer(Colour.Black);

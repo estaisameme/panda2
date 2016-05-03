@@ -15,6 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class RealPlayer implements Player{
     Dijkstra dijkstra;
     ScotlandYardView view;
+    ScotlandYard yard;
     ScotlandYardGraph graph;
     HashMap<Double,Move> weightedMove =  new HashMap<Double,Move>();
     HashMap<Double,Move> newUserObject = new HashMap<Double,Move>();
@@ -45,6 +46,23 @@ public class RealPlayer implements Player{
         catch (Exception e) {
         }
         return location;
+    }
+
+    public Ticket fetchTicket(Move move,Colour player) {
+        try {
+            MoveDouble mv = ((MoveDouble)move);
+            if(view.getPlayerTickets(player,Ticket.Double) > 0){
+                return Ticket.Double;
+            }
+        }
+        catch (Exception e) {
+        }
+        try {
+            return ((MoveTicket)move).ticket;
+        }
+        catch (Exception e) {
+        }
+        return null;
     }
 
     //Returns the score/weight of a move made by Mr X
@@ -98,7 +116,7 @@ public class RealPlayer implements Player{
 
                 for (Move move : moves) {
                     //Creates the child node, by recursively calling buildGameTree, but for the minimising player
-                    Node node = buildGameTree(graph.generateMoves(opponent, opLocation), depth + 1, fetchTarget(location, move),
+                    Node node = buildGameTree(validMoves(opponent,opLocation), depth + 1, fetchTarget(location, move),
                             opLocation, move, opponent,currentDistance,bigNode.fetchValue().fetchWeight(),beta, time);
                     bigNode.addChild(node);
                     //Updates the parent node with the best child weight(in this case the biggest)
@@ -120,7 +138,7 @@ public class RealPlayer implements Player{
                 bigNode.fetchValue().changeWeight(beta); //Sets the bignode's starting weight to that of beta
                 for (Move move : moves) {
                     //Creates the child node, by recursively calling buildGameTree, but for the maximising player
-                    Node node = buildGameTree(graph.generateMoves(view.getCurrentPlayer(), location), depth+1, location,
+                    Node node = buildGameTree(validMoves(view.getCurrentPlayer(),location), depth+1, location,
                             fetchTarget(opLocation, move), move, opponent,currentDistance,alpha,bigNode.fetchValue().fetchWeight(), time);
                     bigNode.addChild(node);
                     //Updates the parent node with the best child weight(in this case the smallest)
@@ -160,6 +178,28 @@ public class RealPlayer implements Player{
         }
         return bigNode;
     }
+
+    public List<Move> validMoves(Colour player,int location) {
+        List possibleMoves = graph.generateMoves(player, location);
+        ArrayList validMoves = new ArrayList();
+        Iterator var5 = possibleMoves.iterator();
+
+        while(var5.hasNext()) {
+            Move move = (Move)var5.next();
+            if(view.getPlayerTickets(player,fetchTicket(move,player)) > 0) {
+                validMoves.add(move);
+            }
+        }
+
+        if(!player.equals(Colour.Black) && validMoves.size() == 0) {
+            validMoves.add(MovePass.instance(player));
+        }
+
+        return validMoves;
+    }
+
+
+
 
     //Function to return the nearest detective to a given location, currently used for Mr X
     public Colour getClosestDetective(int location) {
